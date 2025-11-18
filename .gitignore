@@ -1,0 +1,20 @@
+# Node/npm
+node_modules/
+.npmrc
+
+# Builds
+build/
+dist/
+coverage/
+.tmp/
+
+# Envs
+.env
+.env.*
+*.local
+
+# IDEs/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
