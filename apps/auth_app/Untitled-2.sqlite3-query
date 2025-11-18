@@ -1,0 +1,3 @@
+-- database: c:\Users\Usuario\Documents\vbProgramas\Consesionario\concesionario.db
+
+SELECT * FROM audit_log;

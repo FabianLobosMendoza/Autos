@@ -1,0 +1,31 @@
+"""
+Proyecto Django: Concesionario Web
+
+Estructura:
+    concesionario_project/
+    ├── manage.py
+    ├── concesionario_project/  (configuración)
+    │   ├── settings.py
+    │   ├── urls.py
+    │   ├── wsgi.py
+    │   └── asgi.py
+    ├── apps/
+    │   ├── core/  (home, landing)
+    │   ├── auth_app/  (login, registro)
+    │   ├── users/  (gestión de usuarios)
+    │   └── audit/  (auditoría)
+    ├── static/  (CSS, JS)
+    ├── templates/  (HTML)
+    ├── requirements.txt
+    └── .env
+
+Instalación:
+    pip install -r requirements.txt
+    python manage.py migrate
+    python manage.py runserver
+
+Usuario por defecto:
+    Usuario: Arkangel
+    Contraseña: Arkangel_01
+    Rol: Administrador
+"""

@@ -1,0 +1,16 @@
+
+ERROR: no tiene el derecho de usuario para administrar auditor¡as.
+*****  Lo necesita para copiar informaci¢n de auditor¡a (/COPY:U o /COPYALL).
+
+       Uso sencillo :: ROBOCOPY origen destino /MIR
+
+             origen :: Directorio de origen (unidad:\ruta o
+                       \\servidor\recurso_compartido\ruta).
+            destino :: Directorio de destino  (unidad:\ruta o
+                       \\servidor\recurso_compartido\ruta).
+               /MIR :: Reflejar un  rbol de directorios completo.
+
+    Para obtener m s informaci¢n de uso, ejecute ROBOCOPY /?
+
+                                                          
+****  /MIR puede tanto ELIMINAR archivos como copiarlos

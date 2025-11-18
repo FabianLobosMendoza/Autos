@@ -1,0 +1,56 @@
+# Python / Django
+*.py[cod]
+__pycache__/
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.sqlite3
+*.db
+/media/
+/staticfiles/
+.env
+.env.*
+node_modules/
+venv/
+env/
+
+# Django stuff
+*.log
+local_settings.py
+db.sqlite3
+# If using django collectstatic
+/static/
+
+# Byte-compiled / caches
+.python-version
+.pytest_cache/
+.coverage
+coverage.xml
+
+# VSCode
+.vscode/
+
+# JetBrains
+.idea/
+*.iml
+
+# System
+.DS_Store
+Thumbs.db
+
+# Personal caches and tools
+.cache/
+.codex/
+.gemini/
+.n8n/
+.streamlit/
+
+# Windows metadata
+NTUSER.DAT*
+ntuser.ini
+AppData/
+"3D Objects"/
+
+# Keep README
+!README.md

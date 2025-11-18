@@ -1,0 +1,68 @@
+{% extends "base/base.html" %}
+
+{% block title %}Login - Concesionario{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">Iniciar Sesión</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }}</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">{{ form.password.label }}</label>
+                        <div class="input-group">
+                            {{ form.password }}
+                            <button class="btn btn-outline-secondary" type="button" id="toggle-password" aria-label="Mostrar u ocultar contrasena">
+                                <span id="toggle-password-text">Ver</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        {{ form.remember_me }}
+                        <label class="form-check-label" for="{{ form.remember_me.id_for_label }}">
+                            {{ form.remember_me.label }}
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                </form>
+                <p class="text-center mt-3">
+                    ¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="password"] {
+        display: block;
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        font-size: 1rem;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
+        const toggleButton = document.getElementById('toggle-password');
+        const toggleText = document.getElementById('toggle-password-text');
+
+        if (passwordInput && toggleButton && toggleText) {
+            toggleButton.addEventListener('click', function() {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                toggleText.textContent = isPassword ? 'Ocultar' : 'Ver';
+            });
+        }
+    });
+</script>
+{% endblock %}

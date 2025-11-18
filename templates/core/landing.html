@@ -1,0 +1,60 @@
+{% extends "base/base.html" %}
+
+{% block title %}Landing - Concesionario{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="jumbotron">
+            <h1 class="display-4">¡Bienvenido, {{ user.first_name|default:user.username }}!</h1>
+            <p class="lead">Sistema de gestión del Concesionario</p>
+            <hr class="my-4">
+            <p>Selecciona una opción de la barra de navegación para continuar.</p>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Mi Perfil</h5>
+                        <p class="card-text">Actualiza tu información personal.</p>
+                        <a href="{% url 'profile_view' %}" class="btn btn-primary">Ver Perfil</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Cambiar Contraseña</h5>
+                        <p class="card-text">Actualiza tu contraseña de acceso.</p>
+                        <a href="{% url 'change_password' %}" class="btn btn-primary">Cambiar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if user.is_staff %}
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Gestionar Usuarios</h5>
+                        <p class="card-text">Panel de administración de usuarios.</p>
+                        <a href="{% url 'user_list' %}" class="btn btn-danger">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Auditoría</h5>
+                        <p class="card-text">Revisar registro de acciones.</p>
+                        <a href="{% url 'audit_log_list' %}" class="btn btn-danger">Ver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

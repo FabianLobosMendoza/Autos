@@ -1,0 +1,23 @@
+{% extends "base/base.html" %}
+
+{% block title %}Mi perfil{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Mi perfil</h3>
+    <a class="btn btn-primary" href="{% url 'profile_edit' %}">Editar</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Usuario:</strong> {{ user.username }}</p>
+        <p><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <hr>
+        <p><strong>Telefono:</strong> {{ profile.phone }}</p>
+        <p><strong>Fecha de nacimiento:</strong> {{ profile.birthdate }}</p>
+        <p><strong>Direccion:</strong> {{ profile.address }}</p>
+        <p><strong>Notas:</strong> {{ profile.notes }}</p>
+    </div>
+</div>
+{% endblock %}

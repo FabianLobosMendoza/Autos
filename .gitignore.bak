@@ -1,0 +1,48 @@
+# OS & editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# System files
+AppData/
+"3D Objects"/
+ntuser.ini
+NTUSER.DAT*
+
+# Python
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+*.log
+.env
+.env.*
+
+# Node / build
+node_modules/
+dist/
+build/
+
+# caches and personal
+.cache/
+.codex/
+.gemini/
+.n8n/
+.streamlit/
+
+# IDEs
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# backup
+*.bak
+*.tmp
+
+# keep README
+!README.md
