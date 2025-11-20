@@ -10,8 +10,10 @@ call venv\Scripts\activate.bat
 
 REM 2. Instalar dependencias
 echo 2️⃣ Instalando dependencias...
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install --upgrade pip setuptools wheel
+echo ℹ️  Limpiando caché de pip...
+pip cache purge
+pip install --only-binary :all: -r requirements.txt || exit /b
 
 REM 3. Crear archivo .env
 echo 3️⃣ Creando archivo .env...
