@@ -99,10 +99,3 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # Auditoría
 AUDIT_LOG_ENABLED = True
-
-# Temas
-THEME_CHOICES = [
-    ('light', 'Claro'),
-    ('dark', 'Oscuro'),
-]
-DEFAULT_THEME = 'light'

@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Q
 from apps.users.models import UserProfile
-from apps.core.models import ThemePreference
 
 
 def is_admin(user):
@@ -14,9 +13,8 @@ def is_admin(user):
 
 
 def ensure_user_related(user):
-    """Garantiza que el usuario tenga perfil y preferencia de tema."""
+    """Garantiza que el usuario tenga perfil."""
     UserProfile.objects.get_or_create(user=user)
-    ThemePreference.objects.get_or_create(user=user)
 
 
 @login_required(login_url='login')
@@ -216,7 +214,6 @@ def create_user(request):
                 'birthdate': birthdate_value or None,
             }
         )
-        ThemePreference.objects.get_or_create(user=user)
 
         messages.success(request, f'Usuario {user.username} creado correctamente.')
         return redirect('user_detail', user_id=user.id)

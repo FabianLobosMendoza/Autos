@@ -10,26 +10,9 @@
         .navbar {
             background-color: #00008B !important;
         }
-
-        {% if user.is_authenticated and user.profile.theme == 'dark' %}
-        :root {
-            color-scheme: dark;
-        }
-        body {
-            background-color: #2e2e2e;
-            color: #f0f0f0;
-        }
-        .card {
-            background-color: #3a3a3a;
-            border-color: #555;
-        }
-        .btn-dark { background-color: #3a3a3a; }
-        {% else %}
         body {
             background-color: #f8f9fa;
         }
-        {% endif %}
-        
         footer {
             margin-top: 3rem;
             padding: 2rem 0;
@@ -42,13 +25,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{% url 'landing' %}">
-                {% if user.is_authenticated and user.profile.theme == 'dark' %}
-                    {# Mostrar logo2 para el tema oscuro #}
-                    <img src="{% static 'images/logo2.jpeg' %}" alt="Logo" width="30" height="30" class="me-2">
-                {% else %}
-                    {# Mostrar logo1 para el tema claro (o si el usuario no está logueado) #}
-                    <img src="{% static 'images/logo1.jpeg' %}" alt="Logo" width="30" height="30" class="me-2">
-                {% endif %}
+                <img src="{% static 'images/logo1.jpeg' %}" alt="Logo" width="30" height="30" class="me-2">
                 <span>Concesionario</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -62,23 +39,14 @@
                         <a class="nav-link" href="{% url 'user_list' %}">Gestionar Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'audit_log_list' %}">Auditoría</a>
+                        <a class="nav-link" href="{% url 'audit_log_list' %}">Auditoria</a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'profile_view' %}">Perfil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'toggle_theme' %}">
-                            {% if user.profile.theme == 'dark' %}
-                            ☀️ Tema Claro
-                            {% else %}
-                            🌙 Tema Oscuro
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
+                        <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesion</a>
                     </li>
                     {% else %}
                     <li class="nav-item">

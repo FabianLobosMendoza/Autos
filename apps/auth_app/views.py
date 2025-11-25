@@ -5,13 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from apps.auth_app.forms import CustomUserCreationForm, LoginForm
 from apps.users.models import UserProfile
-from apps.core.models import ThemePreference
 
 
 def _ensure_related(user):
-    """Make sure profile and theme preference exist for the user."""
+    """Make sure profile exists for the user."""
     UserProfile.objects.get_or_create(user=user)
-    ThemePreference.objects.get_or_create(user=user)
 
 
 def custom_login(request):

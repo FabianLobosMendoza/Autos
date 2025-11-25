@@ -1,6 +1,6 @@
 # Autos
 
-Proyecto Django 4.2 para un concesionario, con autenticacion, perfiles de usuario, auditoria y personalizacion de tema. Usa REST Framework, CORS y Crispy (Bootstrap 5).
+Proyecto Django 4.2 para un concesionario, con autenticacion, perfiles de usuario y auditoria. Usa REST Framework, CORS y Crispy (Bootstrap 5).
 
 ## Requisitos
 - Python 3.10+ (virtualenv recomendado)
@@ -15,7 +15,7 @@ Proyecto Django 4.2 para un concesionario, con autenticacion, perfiles de usuari
    - `ALLOWED_HOSTS` (dominios o IPs separados por coma)
    - `CORS_ALLOWED_ORIGINS` (origenes permitidos para frontend)
 4) Aplicar migraciones: `python manage.py migrate`.  
-5) Datos de ejemplo (usuarios y preferencias): `python init_data.py` despues de las migraciones.  
+5) Datos de ejemplo (usuarios): `python init_data.py` despues de las migraciones.  
 6) (Opcional) Crea un superusuario: `python manage.py createsuperuser`.  
 7) Levantar el servidor: `python manage.py runserver` y abre http://localhost:8000/.
 

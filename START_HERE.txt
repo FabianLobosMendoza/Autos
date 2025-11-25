@@ -1,252 +1,52 @@
-╔══════════════════════════════════════════════════════════════════╗
-║                                                                  ║
-║    ✅ MIGRACIÓN COMPLETADA: TKINTER → DJANGO                    ║
-║                                                                  ║
-║    Fecha: 18 de Noviembre de 2025                               ║
-║    Estado: PRODUCCIÓN-READY                                     ║
-║    Versión Django: 4.2.8                                        ║
-║                                                                  ║
-╚══════════════════════════════════════════════════════════════════╝
+============================================================
+CONCESIONARIO - MIGRACION COMPLETA A DJANGO
+============================================================
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  📊 ESTADÍSTICAS DE MIGRACIÓN                                 ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+Estado: Produccion-ready
+Fecha: 18/11/2025
 
-  Archivos Python creados ............ 37 ✅
-  Archivos HTML/Templates ............ 3 ✅
-  Apps Django ........................ 4 ✅
-  Modelos ............................ 4 ✅
-  Vistas ............................ 15+ ✅
-  URLs configuradas ................ 20+ ✅
-  Líneas de código ................ 2000 ✅
-  Documentación ...................... 5 ✅
+CONTENIDO CLAVE
+---------------
+- Apps: core (landing), auth_app (auth), users (perfiles/CRUD), audit (auditoria).
+- Templates Bootstrap 5 y base con navbar.
+- Script init_data.py para datos de prueba (usuario Arkangel).
+- Archivos originales de Tkinter se mantienen en la raiz por referencia.
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  📁 NUEVA ESTRUCTURA                                           ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+INSTALACION RAPIDA
+------------------
+python -m venv venv
+venv\Scripts\activate    # en Linux/Mac: source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python init_data.py
+python manage.py runserver
 
-  Consesionario/
-  ├── django_app/                    ← NUEVA CARPETA
-  │   ├── manage.py                  ← Ejecutar aquí
-  │   ├── requirements.txt           ← pip install
-  │   ├── setup.sh / setup.bat       ← Instalación
-  │   │
-  │   ├── 📚 DOCUMENTACIÓN
-  │   │   ├── README.md
-  │   │   ├── QUICK_START.md
-  │   │   ├── MIGRATION_SUMMARY.md
-  │   │   └── ESTRUCTURA.txt
-  │   │
-  │   ├── 🔧 concesionario_project/
-  │   │   ├── settings.py
-  │   │   ├── urls.py
-  │   │   ├── wsgi.py
-  │   │   └── asgi.py
-  │   │
-  │   ├── 📦 apps/                   (4 apps Django)
-  │   │   ├── core/                  (home, tema)
-  │   │   ├── auth_app/              (login, registro)
-  │   │   ├── users/                 (gestión usuarios)
-  │   │   └── audit/                 (auditoría)
-  │   │
-  │   └── 📄 templates/              (HTML + Bootstrap 5)
-  │       ├── base/
-  │       ├── core/
-  │       └── auth/
-  │
-  ├── main.py                        ← Original Tkinter
-  ├── database.py
-  ├── validators.py
-  └── components/, windows/, dialogs/
+CREDENCIALES DE PRUEBA
+----------------------
+Usuario: Arkangel
+Contrasena: Arkangel_01
+Rol: Administrador
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  🚀 INICIO RÁPIDO                                             ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+FUNCIONALIDADES
+---------------
+- Autenticacion: login, registro, logout, cambio de contrasena, remember me.
+- Gestion de usuarios (admin): listar, ver, editar, cambiar rol, reset pass, eliminar.
+- Auditoria: registro automatico, filtros, export CSV.
+- Plantilla base con mensajes y navbar.
 
-  📊 Windows:
-    cd django_app
-    setup.bat
+RUTAS PRINCIPALES
+-----------------
+/                       landing (requiere login)
+/auth/login/            login
+/auth/register/         registro
+/auth/logout/           logout
+/auth/change-password/  cambiar contrasena
+/users/                 usuarios (admin)
+/users/profile/         mi perfil
+/audit/                 auditoria (admin), export en /audit/export/
+/admin/                 panel Django
 
-  🐧 Linux/Mac:
-    cd django_app
-    chmod +x setup.sh
-    ./setup.sh
-
-  🌐 Luego accede a: http://localhost:8000
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  🔐 CREDENCIALES DE PRUEBA                                    ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  Usuario ........................ Arkangel
-  Contraseña ..................... Arkangel_01
-  Rol ............................ Administrador
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  ✅ FUNCIONALIDADES IMPLEMENTADAS                             ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  ✅ Autenticación
-     • Login personalizado
-     • Registro de usuarios
-     • Logout
-     • Cambio de contraseña (propio y admin)
-     • Remember me
-
-  ✅ Gestión de Usuarios
-     • Listado (admin)
-     • Ver detalles (admin)
-     • Editar perfil (admin)
-     • Cambiar rol (admin)
-     • Eliminar (admin)
-     • Ver/editar perfil propio
-
-  ✅ Tema
-     • Claro/Oscuro
-     • Toggle en navbar
-     • Persistencia en BD
-
-  ✅ Auditoría
-     • Registro automático de acciones
-     • Filtros (actor, acción, fecha)
-     • Exportación a CSV
-     • Vista web interactiva
-
-  ✅ Seguridad
-     • CSRF protection
-     • Password hashing (PBKDF2)
-     • SQL injection prevention
-     • XSS protection
-     • Session security
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  🔗 URLS DISPONIBLES                                          ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  http://localhost:8000/                    Landing
-  http://localhost:8000/auth/login/         Login
-  http://localhost:8000/auth/register/      Registro
-  http://localhost:8000/users/              Usuarios (admin)
-  http://localhost:8000/users/profile/      Mi perfil
-  http://localhost:8000/audit/              Auditoría (admin)
-  http://localhost:8000/admin/              Admin panel
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  📚 DOCUMENTACIÓN                                              ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  Dentro de django_app/ encontrarás:
-
-  1. README.md
-     → Guía completa de instalación y uso
-
-  2. QUICK_START.md
-     → Inicio rápido paso a paso
-
-  3. MIGRATION_SUMMARY.md
-     → Documentación técnica detallada
-
-  4. ESTRUCTURA.txt
-     → Descripción de directorios y archivos
-
-  5. DJANGO_MIGRATION_COMPLETE.md
-     → En la raíz, resumen de todo
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  🎯 PRÓXIMOS PASOS (OPCIONALES)                               ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  Corto Plazo:
-    □ Crear templates faltantes
-    □ Mejorar CSS
-    □ Más filtros en auditoría
-
-  Mediano Plazo:
-    □ API REST (Django REST Framework)
-    □ Frontend moderno (React/Vue)
-    □ Tests automáticos
-
-  Producción:
-    □ Gunicorn + Nginx
-    □ PostgreSQL
-    □ Redis cache
-    □ Despliegue en cloud
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  ✨ VENTAJAS DE DJANGO                                        ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  ✅ Web           → Acceso desde cualquier navegador
-  ✅ Multiusuario  → Soporta múltiples usuarios simultáneos
-  ✅ Seguro        → Protección CSRF, XSS, SQL injection
-  ✅ Admin         → Panel administrativo automático
-  ✅ Escalable     → Fácil de escalar horizontalmente
-  ✅ Testing       → Frameworks de testing integrados
-  ✅ Deployment    → Múltiples opciones (Heroku, AWS, etc.)
-  ✅ Comunidad     → Amplia comunidad y librerías
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  🆘 SOLUCIÓN DE PROBLEMAS                                     ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  "ModuleNotFoundError: No module named 'django'"
-    → pip install -r requirements.txt
-
-  "Port 8000 already in use"
-    → python manage.py runserver 8001
-
-  "Database locked" (con SQLite)
-    → Usa PostgreSQL en producción
-
-  "Template not found"
-    → Verifica TEMPLATES['DIRS'] en settings.py
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  📈 COMPARACIÓN: TKINTER vs DJANGO                            ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  Aspecto           │ Tkinter          │ Django
-  ─────────────────────────────────────────────────
-  Tipo              │ Desktop          │ Web
-  Acceso            │ Local            │ Cualquier navegador
-  Multiusuario      │ No               │ Sí (nativo)
-  Sesiones          │ Manual           │ Automáticas
-  Autenticación     │ Custom           │ Django auth
-  Base de datos     │ SQLite local     │ SQLite/PostgreSQL/MySQL
-  Admin             │ DIY              │ Django admin automático
-  Escalabilidad     │ Baja             │ Alta
-  Testing           │ Complejo         │ Sencillo
-  Deployment        │ Difícil          │ Fácil
-  Seguridad         │ Manual           │ Incorporada
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  ✅ CHECKLIST FINAL                                           ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-  ✅ Estructura Django creada
-  ✅ 4 apps implementadas (core, auth_app, users, audit)
-  ✅ Modelos migrados a Django ORM
-  ✅ Vistas creadas (15+ funciones)
-  ✅ URLs configuradas
-  ✅ Templates Bootstrap 5
-  ✅ Autenticación integrada
-  ✅ Auditoría implementada
-  ✅ Tema claro/oscuro
-  ✅ Documentación completa (5 archivos)
-  ✅ Scripts de instalación
-  ✅ Datos de prueba
-
-╔══════════════════════════════════════════════════════════════════╗
-║                                                                  ║
-║                    🎉 ¡LISTO PARA USAR! 🎉                     ║
-║                                                                  ║
-║  Tu aplicación está lista para:                                 ║
-║    ✅ Desarrollo local                                          ║
-║    ✅ Testing                                                   ║
-║    ✅ Despliegue en producción                                  ║
-║    ✅ Escalamiento                                              ║
-║                                                                  ║
-║  Accede a: http://localhost:8000                                ║
-║  Usuario: Arkangel | Contraseña: Arkangel_01                   ║
-║                                                                  ║
-╚══════════════════════════════════════════════════════════════════╝
+NOTAS
+-----
+- Tema oscuro/claro eliminado: la UI usa un tema claro fijo.
+- Ajusta variables de entorno a partir de .env.example si es necesario.

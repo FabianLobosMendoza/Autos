@@ -7,5 +7,5 @@ class UsersConfig(AppConfig):
     verbose_name = 'User Management'
 
     def ready(self):
-        # Import signals to ensure profiles and theme preferences are created automatically.
+        # Import signals to ensure profiles are created automatically.
         import apps.users.signals  # noqa: F401
