@@ -1,0 +1,72 @@
+{% extends "base/base.html" %}
+
+{% block title %}Detalle Cliente{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Detalle de Cliente</h3>
+    <div>
+        <a href="{% url 'client_edit' client.id %}" class="btn btn-outline-secondary me-2">Editar</a>
+        <a href="{% url 'client_contract' client.id %}" class="btn btn-outline-success me-2" target="_blank">Imprimir</a>
+        <a href="{% url 'client_list' %}" class="btn btn-outline-primary">Volver</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">Identidad</div>
+    <div class="card-body row">
+        <div class="col-md-6"><strong>Nombre / Razón Social:</strong> {% if client.company_name %}{{ client.company_name }}{% else %}{{ client.last_name }}, {{ client.first_name }}{% endif %}</div>
+        <div class="col-md-3"><strong>Documento:</strong> {{ client.doc_type }} {{ client.doc_number }}</div>
+        <div class="col-md-3"><strong>Fecha Nacimiento:</strong> {{ client.birth_date }}</div>
+        <div class="col-md-3"><strong>Sexo:</strong> {{ client.get_sex_display }}</div>
+        <div class="col-md-3"><strong>Estado Civil:</strong> {{ client.get_marital_status_display }}</div>
+        <div class="col-md-3"><strong>Nacionalidad:</strong> {{ client.get_nationality_display }}</div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">Datos Fiscales</div>
+    <div class="card-body row">
+        <div class="col-md-4"><strong>Condición Fiscal:</strong> {{ client.get_tax_condition_display }}</div>
+        <div class="col-md-4"><strong>CUIT/CUIL:</strong> {{ client.cuit }}</div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">Domicilio</div>
+    <div class="card-body row">
+        <div class="col-md-6"><strong>Calle:</strong> {{ client.street }} {{ client.street_number }}</div>
+        <div class="col-md-3"><strong>Piso/Depto:</strong> {{ client.floor }} {{ client.apartment }}</div>
+        <div class="col-md-3"><strong>Código Postal:</strong> {{ client.postal_code }}</div>
+        <div class="col-md-4"><strong>Localidad:</strong> {{ client.city }}</div>
+        <div class="col-md-4"><strong>Provincia:</strong> {{ client.province }}</div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">Contacto</div>
+    <div class="card-body row">
+        <div class="col-md-4"><strong>Teléfono:</strong> {{ client.phone }}</div>
+        <div class="col-md-4"><strong>Email:</strong> {{ client.email }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Cotitular / Cónyuge</div>
+    <div class="card-body">
+        {% if coholder %}
+        <div class="row">
+            <div class="col-md-6"><strong>Nombre:</strong> {{ coholder.full_name }}</div>
+            <div class="col-md-3"><strong>Sexo:</strong> {{ coholder.get_sex_display }}</div>
+            <div class="col-md-3"><strong>DNI:</strong> {{ coholder.dni }}</div>
+            <div class="col-md-3"><strong>Fecha Nacimiento:</strong> {{ coholder.birth_date }}</div>
+            <div class="col-md-3"><strong>Nacionalidad:</strong> {{ coholder.get_nationality_display }}</div>
+            <div class="col-md-3"><strong>Teléfono:</strong> {{ coholder.phone }}</div>
+            <div class="col-md-3"><strong>Email:</strong> {{ coholder.email }}</div>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">Sin cotitular cargado.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

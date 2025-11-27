@@ -8,13 +8,15 @@ from apps.users.models import UserProfile
 
 
 def is_admin(user):
-    """Verifica si el usuario es administrador."""
-    return user.is_staff or user.is_superuser
+    """Verifica si el usuario tiene rol administrador o supervisor."""
+    profile = getattr(user, 'profile', None)
+    role = getattr(profile, 'role', UserProfile.ROLE_USER) if profile else UserProfile.ROLE_USER
+    return user.is_superuser or role in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
 
 
 def ensure_user_related(user):
     """Garantiza que el usuario tenga perfil."""
-    UserProfile.objects.get_or_create(user=user)
+    UserProfile.objects.get_or_create(user=user, defaults={'role': UserProfile.ROLE_USER})
 
 
 @login_required(login_url='login')
@@ -55,6 +57,8 @@ def edit_user_profile(request, user_id):
         user.first_name = request.POST.get('first_name', '')
         user.last_name = request.POST.get('last_name', '')
         user.email = request.POST.get('email', '')
+        role_value = request.POST.get('role', UserProfile.ROLE_USER)
+        user.is_staff = role_value in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
         user.save()
         
         profile.phone = request.POST.get('phone', '')
@@ -62,6 +66,7 @@ def edit_user_profile(request, user_id):
         profile.notes = request.POST.get('notes', '')
         birthdate_value = request.POST.get('birthdate')
         profile.birthdate = birthdate_value or None
+        profile.role = role_value
         profile.save()
         
         messages.success(request, 'Perfil actualizado.')
@@ -104,8 +109,37 @@ def toggle_admin(request, user_id):
     ensure_user_related(user)
     user.is_staff = not user.is_staff
     user.save()
+    user.profile.role = UserProfile.ROLE_ADMIN if user.is_staff else UserProfile.ROLE_USER
+    user.profile.save()
     status = "administrador" if user.is_staff else "usuario"
     messages.success(request, f'{user.username} ahora es {status}.')
+    return redirect('user_detail', user_id=user.id)
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin, login_url='landing')
+def update_user_role(request, user_id):
+    """Actualizar rol del usuario desde el detalle."""
+    user = get_object_or_404(User, id=user_id)
+    ensure_user_related(user)
+
+    if request.method != 'POST':
+        messages.error(request, 'Método no permitido.')
+        return redirect('user_detail', user_id=user.id)
+
+    new_role = request.POST.get('role', UserProfile.ROLE_USER)
+    valid_roles = [choice[0] for choice in UserProfile.ROLE_CHOICES]
+    if new_role not in valid_roles:
+        messages.error(request, 'Rol inválido.')
+        return redirect('user_detail', user_id=user.id)
+
+    user.is_staff = new_role in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
+    user.save()
+    profile = user.profile
+    profile.role = new_role
+    profile.save(update_fields=['role'])
+
+    messages.success(request, f'Rol de {user.username} actualizado a {profile.get_role_display()}.')
     return redirect('user_detail', user_id=user.id)
 
 
@@ -175,7 +209,7 @@ def create_user(request):
         last_name = request.POST.get('last_name', '').strip()
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
-        is_staff = bool(request.POST.get('is_staff'))
+        role_value = request.POST.get('role', UserProfile.ROLE_USER)
         phone = request.POST.get('phone', '').strip()
         address = request.POST.get('address', '').strip()
         notes = request.POST.get('notes', '').strip()
@@ -203,11 +237,12 @@ def create_user(request):
             password=password,
             first_name=first_name,
             last_name=last_name,
-            is_staff=is_staff
+            is_staff=role_value in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR),
         )
         UserProfile.objects.get_or_create(
             user=user,
             defaults={
+                'role': role_value,
                 'phone': phone,
                 'address': address,
                 'notes': notes,

@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'apps.auth_app',
     'apps.users',
     'apps.audit',
+    'apps.clients',
 ]
 
 MIDDLEWARE = [

@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        {% if user.is_staff %}
+        {% if role == 'admin' or role == 'supervisor' %}
         <div class="row mt-4">
             <div class="col-md-6">
                 <div class="card">

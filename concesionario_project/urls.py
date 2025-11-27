@@ -10,6 +10,7 @@ urlpatterns = [
     path('auth/', include('apps.auth_app.urls')),
     path('users/', include('apps.users.urls')),
     path('audit/', include('apps.audit.urls')),
+    path('clientes/', include('apps.clients.urls')),
 ]
 
 if settings.DEBUG:

@@ -24,6 +24,15 @@
                         <label class="form-label" for="email">Email</label>
                         <input class="form-control" type="email" id="email" name="email" value="{{ user.email }}">
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="role">Rol</label>
+                        <select class="form-select" id="role" name="role">
+                            <option value="usuario" {% if profile.role == 'usuario' %}selected{% endif %}>Usuario</option>
+                            <option value="vendedor" {% if profile.role == 'vendedor' %}selected{% endif %}>Vendedor oficial de cuentas</option>
+                            <option value="supervisor" {% if profile.role == 'supervisor' %}selected{% endif %}>Supervisor</option>
+                            <option value="admin" {% if profile.role == 'admin' %}selected{% endif %}>Administrador</option>
+                        </select>
+                    </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label" for="phone">Telefono</label>

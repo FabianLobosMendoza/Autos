@@ -9,7 +9,7 @@ from apps.users.models import UserProfile
 
 def _ensure_related(user):
     """Make sure profile exists for the user."""
-    UserProfile.objects.get_or_create(user=user)
+    UserProfile.objects.get_or_create(user=user, defaults={'role': UserProfile.ROLE_USER})
 
 
 def custom_login(request):

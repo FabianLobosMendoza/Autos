@@ -5,10 +5,20 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="mb-0">Usuario: {{ user.username }}</h3>
-    <div class="btn-group">
+    <div class="btn-group align-items-center">
         <a href="{% url 'edit_user_profile' user.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
         <a href="{% url 'change_user_password' user.id %}" class="btn btn-sm btn-outline-secondary">Cambiar contrasena</a>
-        <a href="{% url 'toggle_admin' user.id %}" class="btn btn-sm btn-outline-warning">Toggle admin</a>
+        <form method="post" action="{% url 'update_user_role' user.id %}" class="d-flex align-items-center">
+            {% csrf_token %}
+            <select name="role" class="form-select form-select-sm border-primary text-body fw-semibold"
+                    onchange="this.form.submit()"
+                    style="min-width: 190px; height: 2rem;">
+                <option value="usuario" {% if profile.role == 'usuario' %}selected{% endif %}>Usuario</option>
+                <option value="vendedor" {% if profile.role == 'vendedor' %}selected{% endif %}>Vendedor oficial de cuentas</option>
+                <option value="supervisor" {% if profile.role == 'supervisor' %}selected{% endif %}>Supervisor</option>
+                <option value="admin" {% if profile.role == 'admin' %}selected{% endif %}>Administrador</option>
+            </select>
+        </form>
         <a href="{% url 'delete_user' user.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
     </div>
 </div>
@@ -18,7 +28,7 @@
         <h5 class="card-title">Datos basicos</h5>
         <p><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Rol:</strong> {% if user.is_staff %}Administrador{% else %}Usuario{% endif %}</p>
+        <p><strong>Rol:</strong> {{ profile.get_role_display }}</p>
     </div>
 </div>
 

@@ -1,0 +1,192 @@
+{% extends "base/base.html" %}
+
+{% block title %}{% if is_edit %}Editar Cliente{% else %}Nuevo Cliente{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h3 class="mb-3">{% if is_edit %}Editar Cliente{% else %}Alta de Cliente{% endif %}</h3>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="card mb-3">
+                <div class="card-header">Datos de Identidad</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" name="last_name" class="form-control" value="{{ client_form.last_name.value|default_if_none:'' }}">
+                        {% for error in client_form.last_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="first_name" class="form-control" value="{{ client_form.first_name.value|default_if_none:'' }}">
+                        {% for error in client_form.first_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Razón Social (si corresponde)</label>
+                        <input type="text" name="company_name" class="form-control" value="{{ client_form.company_name.value|default_if_none:'' }}">
+                        {% for error in client_form.company_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Documento</label>
+                        {{ client_form.doc_type }}
+                        {% for error in client_form.doc_type.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Número</label>
+                        <input type="text" name="doc_number" class="form-control" value="{{ client_form.doc_number.value|default_if_none:'' }}">
+                        {% for error in client_form.doc_number.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Nacimiento</label>
+                        {{ client_form.birth_date }}
+                        {% for error in client_form.birth_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Sexo</label>
+                        {{ client_form.sex }}
+                        {% for error in client_form.sex.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado Civil</label>
+                        {{ client_form.marital_status }}
+                        {% for error in client_form.marital_status.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nacionalidad</label>
+                        {{ client_form.nationality }}
+                        {% for error in client_form.nationality.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Datos Fiscales</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Condición Fiscal</label>
+                        {{ client_form.tax_condition }}
+                        {% for error in client_form.tax_condition.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">CUIT/CUIL (sin guiones ni simbolos)</label>
+                        <input type="text" name="cuit" class="form-control" value="{{ client_form.cuit.value|default_if_none:'' }}">
+                        {% for error in client_form.cuit.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Domicilio</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Calle</label>
+                        <input type="text" name="street" class="form-control" value="{{ client_form.street.value|default_if_none:'' }}">
+                        {% for error in client_form.street.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Número</label>
+                        <input type="text" name="street_number" class="form-control" value="{{ client_form.street_number.value|default_if_none:'' }}">
+                        {% for error in client_form.street_number.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Piso</label>
+                        <input type="text" name="floor" class="form-control" value="{{ client_form.floor.value|default_if_none:'' }}">
+                        {% for error in client_form.floor.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Depto</label>
+                        <input type="text" name="apartment" class="form-control" value="{{ client_form.apartment.value|default_if_none:'' }}">
+                        {% for error in client_form.apartment.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Código Postal</label>
+                        <input type="text" name="postal_code" class="form-control" value="{{ client_form.postal_code.value|default_if_none:'' }}">
+                        {% for error in client_form.postal_code.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Localidad</label>
+                        <input type="text" name="city" class="form-control" value="{{ client_form.city.value|default_if_none:'' }}">
+                        {% for error in client_form.city.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Provincia</label>
+                        <input type="text" name="province" class="form-control" value="{{ client_form.province.value|default_if_none:'' }}">
+                        {% for error in client_form.province.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Contacto Titular</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="phone" class="form-control" value="{{ client_form.phone.value|default_if_none:'' }}">
+                        {% for error in client_form.phone.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" name="email" class="form-control" value="{{ client_form.email.value|default_if_none:'' }}">
+                        {% for error in client_form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Datos del Cónyuge / Cotitular (opcional)</span>
+                    <small class="text-muted">Completar solo si aplica</small>
+                </div>
+                <div class="card-body row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Apellido y Nombre</label>
+                        <input type="text" name="co-full_name" class="form-control" value="{{ coholder_form.full_name.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.full_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Sexo</label>
+                        {{ coholder_form.sex }}
+                        {% if coholder_form %}{% for error in coholder_form.sex.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">DNI</label>
+                        <input type="text" name="co-dni" class="form-control" value="{{ coholder_form.dni.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.dni.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Nacimiento</label>
+                        {{ coholder_form.birth_date }}
+                        {% if coholder_form %}{% for error in coholder_form.birth_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nacionalidad</label>
+                        {{ coholder_form.nationality }}
+                        {% if coholder_form %}{% for error in coholder_form.nationality.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="co-phone" class="form-control" value="{{ coholder_form.phone.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.phone.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" name="co-email" class="form-control" value="{{ coholder_form.email.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if client_form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in client_form.non_field_errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'client_list' %}" class="btn btn-outline-secondary">Volver</a>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

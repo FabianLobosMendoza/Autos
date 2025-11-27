@@ -34,14 +34,21 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
-                    {% if user.is_staff %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'user_list' %}">Gestionar Usuarios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'audit_log_list' %}">Auditoria</a>
-                    </li>
-                    {% endif %}
+                    {% with role=user.profile.role %}
+                        {% if role == 'admin' or role == 'supervisor' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_list' %}">Gestionar Usuarios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'audit_log_list' %}">Auditoria</a>
+                        </li>
+                        {% endif %}
+                        {% if role == 'admin' or role == 'supervisor' or role == 'vendedor' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'client_list' %}">Clientes</a>
+                        </li>
+                        {% endif %}
+                    {% endwith %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'profile_view' %}">Perfil</a>
                     </li>
@@ -78,7 +85,7 @@
 
     <footer class="bg-light text-center text-muted">
         <div class="container">
-            <p>&copy; 2025 Concesionario. Usuario: <strong>{{ user.username }}</strong> | Rol: <strong>{% if user.is_staff %}Administrador{% else %}Usuario{% endif %}</strong></p>
+            <p>&copy; 2025 Concesionario. Usuario: <strong>{{ user.username }}</strong> | Rol: <strong>{% if user.is_authenticated %}{{ user.profile.get_role_display }}{% else %}Visitante{% endif %}</strong></p>
         </div>
     </footer>
 

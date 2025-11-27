@@ -1,0 +1,115 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Contrato - {{ client }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Layout para imprimir sobre imágenes de contrato (coloca tus imágenes en static/images/contrato/) */
+    .contract-page {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 1rem;
+    }
+    .contract-sheet {
+        position: relative;
+        margin-bottom: 2rem;
+        border: 1px solid #dee2e6;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    }
+    .contract-sheet img {
+        width: 100%;
+        display: block;
+    }
+    .contract-overlay {
+        position: absolute;
+        inset: 0;
+        padding: 1rem;
+        font-size: 12px;
+    }
+    .field-row {
+        position: absolute;
+        font-weight: 600;
+        color: #222;
+    }
+    /* Ejemplo de posiciones aproximadas. Ajusta según tus imágenes finales. */
+    .p1-name { top: 19%; left: 8%; }
+    .p1-doc { top: 24%; left: 63%; }
+    .p1-address { top: 26%; left: 16%; }
+    .p1-city { top: 26%; left: 70%; }
+    .p1-province { top: 28.5%; left: 16%; }
+    .p1-postal { top: 28.5%; left: 63%; }
+    .p1-cuit { top: 31%; left: 16%; }
+    .p1-birth { top: 31%; left: 63%; }
+    .p1-nationality { top: 33%; left: 16%; }
+    .p1-sex { top: 33%; left: 63%; }
+    .p1-phone { top: 35%; left: 63%; }
+    .p1-civil { top: 35%; left: 16%; }
+    .p1-email { top: 37%; left: 16%; }
+
+    .p1-coholder-name { top: 42%; left: 16%; }
+    .p1-coholder-dni { top: 44%; left: 63%; }
+    .p1-coholder-nationality { top: 46%; left: 16%; }
+    .p1-coholder-sex { top: 46%; left: 63%; }
+    .p1-coholder-phone { top: 48%; left: 63%; }
+    .p1-coholder-birth { top: 44%; left: 16%; }
+    .p1-coholder-email { top: 48%; left: 16%; }
+
+    @media print {
+        .navbar, footer, .no-print { display: none !important; }
+        body { background: #fff; }
+        .contract-page { box-shadow: none; padding: 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 no-print">
+    <h4 class="mb-0">Contrato / Solicitud - {{ client }}</h4>
+    <div>
+        <a class="btn btn-outline-secondary me-2" href="{% url 'client_detail' client.id %}">Volver</a>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
+    </div>
+</div>
+
+<div class="contract-page">
+    <!-- Hoja 1 -->
+    <div class="contract-sheet">
+        <img src="{% static 'images/contrato/hoja1.jpg' %}" alt="Contrato hoja 1">
+        <div class="contract-overlay">
+            <div class="field-row p1-name">{% if client.company_name %}{{ client.company_name }}{% else %}{{ client.last_name }}, {{ client.first_name }}{% endif %}</div>
+            <div class="field-row p1-doc">{{ client.doc_type }} {{ client.doc_number }}</div>
+            <div class="field-row p1-address">{{ client.street }} {{ client.street_number }}{% if client.floor %}, Piso {{ client.floor }}{% endif %}{% if client.apartment %}, Dpto {{ client.apartment }}{% endif %}</div>
+            <div class="field-row p1-city">{{ client.city }}</div>
+            <div class="field-row p1-province">{{ client.province }}</div>
+            <div class="field-row p1-postal">{{ client.postal_code }}</div>
+            <div class="field-row p1-cuit">{{ client.cuit }}</div>
+            <div class="field-row p1-birth">{{ client.birth_date|date:'d/m/Y' }}</div>
+            <div class="field-row p1-nationality">{{ client.get_nationality_display }}</div>
+            <div class="field-row p1-sex">{{ client.get_sex_display }}</div>
+            <div class="field-row p1-phone">{{ client.phone }}</div>
+            <div class="field-row p1-civil">{{ client.get_marital_status_display }}</div>
+            <div class="field-row p1-email">{{ client.email }}</div>
+
+            {% if coholder %}
+            <div class="field-row p1-coholder-name">{{ coholder.full_name }}</div>
+            <div class="field-row p1-coholder-dni">{{ coholder.dni }}</div>
+            <div class="field-row p1-coholder-nationality">{{ coholder.get_nationality_display }}</div>
+            <div class="field-row p1-coholder-sex">{{ coholder.get_sex_display }}</div>
+            <div class="field-row p1-coholder-phone">{{ coholder.phone }}</div>
+            <div class="field-row p1-coholder-birth">{{ coholder.birth_date|date:'d/m/Y' }}</div>
+            <div class="field-row p1-coholder-email">{{ coholder.email }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Hoja 2 (ejemplo) -->
+    <div class="contract-sheet">
+        <img src="{% static 'images/contrato/hoja2.jpg' %}" alt="Contrato hoja 2">
+        <div class="contract-overlay">
+            <!-- Agrega posiciones según necesites -->
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -31,7 +31,7 @@
                 <tr>
                     <td>{{ u.username }}</td>
                     <td>{{ u.email }}</td>
-                    <td>{% if u.is_staff %}Administrador{% else %}Usuario{% endif %}</td>
+                    <td>{{ u.profile.get_role_display }}</td>
                     <td>
                         <a href="{% url 'user_detail' u.id %}" class="btn btn-sm btn-outline-primary">Ver</a>
                     </td>

@@ -6,9 +6,12 @@ from django.db.models import Q
 from datetime import datetime
 import csv
 from apps.audit.models import AuditLog
+from apps.users.models import UserProfile
 
 def is_admin(user):
-    return user.is_staff or user.is_superuser
+    profile = getattr(user, 'profile', None)
+    role = getattr(profile, 'role', UserProfile.ROLE_USER) if profile else UserProfile.ROLE_USER
+    return user.is_superuser or role in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
 
 @login_required(login_url='login')
 @user_passes_test(is_admin, login_url='landing')

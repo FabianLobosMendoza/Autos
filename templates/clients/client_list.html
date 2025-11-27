@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Clientes</h3>
+    <a href="{% url 'client_create' %}" class="btn btn-primary">Nuevo cliente</a>
+</div>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Buscar por nombre, razón social o CUIT" value="{{ query }}">
+        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Documento</th>
+                    <th>CUIT/CUIL</th>
+                    <th>Condición Fiscal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in clients %}
+                <tr>
+                    <td>
+                        {% if c.company_name %}{{ c.company_name }}{% else %}{{ c.last_name }}, {{ c.first_name }}{% endif %}
+                    </td>
+                    <td>{{ c.doc_type }} {{ c.doc_number }}</td>
+                    <td>{{ c.cuit }}</td>
+                    <td>{{ c.get_tax_condition_display }}</td>
+                    <td>
+                        <a href="{% url 'client_detail' c.id %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                        <a href="{% url 'client_edit' c.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-3">No hay clientes cargados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

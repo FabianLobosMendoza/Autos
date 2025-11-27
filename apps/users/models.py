@@ -4,7 +4,19 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     """Perfil extendido de usuario."""
+    ROLE_ADMIN = 'admin'
+    ROLE_USER = 'usuario'
+    ROLE_VENDOR = 'vendedor'
+    ROLE_SUPERVISOR = 'supervisor'
+    ROLE_CHOICES = [
+        (ROLE_ADMIN, 'Administrador'),
+        (ROLE_USER, 'Usuario'),
+        (ROLE_VENDOR, 'Vendedor oficial de cuentas'),
+        (ROLE_SUPERVISOR, 'Supervisor'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_USER)
     phone = models.CharField(max_length=20, blank=True)
     birthdate = models.DateField(null=True, blank=True)
     address = models.CharField(max_length=255, blank=True)
