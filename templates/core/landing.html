@@ -55,6 +55,20 @@
             </div>
         </div>
         {% endif %}
+
+        {% if role == 'admin' or role == 'supervisor' or role == 'vendedor' %}
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Gestionar Clientes</h5>
+                        <p class="card-text">Administración de cartera de clientes.</p>
+                        <a href="{% url 'client_list' %}" class="btn btn-success">Gestionar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

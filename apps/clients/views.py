@@ -7,6 +7,7 @@ from django.db.models import Q
 from .forms import ClientForm, CoHolderForm
 from .models import Client
 from apps.users.models import UserProfile
+from apps.audit.models import AuditLog
 
 
 def is_admin(user):
@@ -60,6 +61,17 @@ def client_create(request):
                 coholder = coholder_form.save(commit=False)
                 coholder.client = client
                 coholder.save()
+            
+            # Registrar en auditoría
+            client_name = client.company_name if client.company_name else f"{client.first_name} {client.last_name}"
+            AuditLog.objects.create(
+                actor=request.user,
+                action='create_client',
+                details=f'Cliente creado: {client_name} (CUIT: {client.cuit})',
+                ip_address=request.META.get('REMOTE_ADDR'),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+            )
+            
             messages.success(request, 'Cliente guardado correctamente.')
             return redirect('client_detail', client_id=client.id)
         messages.error(request, 'Revisa los datos obligatorios.')
@@ -104,6 +116,17 @@ def client_edit(request, client_id):
                 coholder.save()
             elif coholder_instance:
                 coholder_instance.delete()
+            
+            # Registrar en auditoría
+            client_name = client.company_name if client.company_name else f"{client.first_name} {client.last_name}"
+            AuditLog.objects.create(
+                actor=request.user,
+                action='update_client',
+                details=f'Cliente actualizado: {client_name} (CUIT: {client.cuit})',
+                ip_address=request.META.get('REMOTE_ADDR'),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+            )
+            
             messages.success(request, 'Cliente actualizado.')
             return redirect('client_detail', client_id=client.id)
         messages.error(request, 'Revisa los datos obligatorios.')

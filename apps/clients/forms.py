@@ -7,6 +7,22 @@ from .models import Client, CoHolder, validate_cuit
 class ClientForm(forms.ModelForm):
     """Formulario para Cliente con validaciones adicionales."""
 
+    full_name = forms.CharField(
+        label='Nombre y apellido o razón social',
+        required=False,
+        max_length=200,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance:
+            names = " ".join(part for part in [instance.first_name, instance.last_name] if part).strip()
+            company = getattr(instance, 'company_name', '') or ''
+            initial_name = names or company
+            if initial_name:
+                self.fields['full_name'].initial = initial_name
+
     class Meta:
         model = Client
         fields = [
@@ -43,11 +59,13 @@ class ClientForm(forms.ModelForm):
     def clean(self):
         """Ensure either person name or company name is provided."""
         cleaned = super().clean()
-        first_name = cleaned.get('first_name', '').strip()
-        last_name = cleaned.get('last_name', '').strip()
-        company = cleaned.get('company_name', '').strip()
-        if not ((first_name and last_name) or company):
-            raise forms.ValidationError('Ingresar Apellido y Nombre o Razón Social.')
+        full_name = cleaned.get('full_name', '').strip()
+        if not full_name:
+            raise forms.ValidationError('Ingresar Nombre y apellido o Razón Social.')
+        if full_name:
+            cleaned['first_name'] = full_name
+            cleaned['last_name'] = full_name
+            cleaned['company_name'] = full_name
         return cleaned
 
     def clean_cuit(self):

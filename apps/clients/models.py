@@ -13,6 +13,7 @@ DOC_TYPE_CHOICES = [
 SEX_CHOICES = [
     ('M', 'Masculino'),
     ('F', 'Femenino'),
+    ('O', 'Otros'),
 ]
 
 MARITAL_STATUS_CHOICES = [

@@ -1,68 +1,127 @@
 {% extends "base/base.html" %}
+{% load static %}
 
-{% block title %}Login - Concesionario{% endblock %}
+{% block title %}Iniciar Sesión - Gimcar{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: url("{% static 'images/logo1.jpeg' %}") no-repeat center 40% fixed !important;
+        background-size: cover !important;
+        min-height: 100vh;
+    }
+
+    /* Overlay to ensure text readability over the background image */
+    body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 32, 39, 0.85);
+        /* Dark overlay matching previous theme */
+        z-index: -1;
+    }
+
+    .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .login-header {
+        background: linear-gradient(to right, #00008B, #000044);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border-bottom: none;
+    }
+
+    .form-control {
+        border-radius: 25px;
+        padding: 12px 20px;
+        border: 1px solid #e0e0e0;
+        background-color: #f8f9fa;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 3px rgba(0, 0, 139, 0.1);
+        border-color: #00008B;
+    }
+
+    .btn-login {
+        border-radius: 25px;
+        padding: 10px 30px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        background: linear-gradient(to right, #00008B, #0000CD);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 139, 0.3);
+    }
+
+    .login-footer {
+        background-color: transparent;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-4 offset-md-4">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="card-title text-center mb-4">Iniciar Sesión</h3>
-                <form method="post">
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="card login-card">
+            <div class="card-header login-header">
+                <h3 class="font-weight-bold mb-1">Bienvenido</h3>
+                <p class="small mb-0 opacity-75">Gimcar - Sistema de Gestión</p>
+            </div>
+            <div class="card-body p-5">
+                <form method="post" action="{% url 'login' %}">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }}</label>
-                        {{ form.username }}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger rounded-3 shadow-sm" role="alert">
+                        {% for error in form.non_field_errors %}
+                        {{ error }}
+                        {% endfor %}
                     </div>
-                    <div class="mb-3">
-                        <label for="{{ form.password.id_for_label }}" class="form-label">{{ form.password.label }}</label>
-                        <div class="input-group">
-                            {{ form.password }}
-                            <button class="btn btn-outline-secondary" type="button" id="toggle-password" aria-label="Mostrar u ocultar contrasena">
-                                <span id="toggle-password-text">Ver</span>
-                            </button>
-                        </div>
+                    {% endif %}
+
+                    <div class="form-group mb-4">
+                        <label class="small mb-2 font-weight-bold text-muted"
+                            for="{{ form.username.id_for_label }}">USUARIO</label>
+                        <input class="form-control" id="{{ form.username.id_for_label }}" type="text"
+                            name="{{ form.username.name }}" placeholder="Ingresa tu usuario" required />
+                        {% if form.username.errors %}
+                        <div class="text-danger small mt-1 ps-2">{{ form.username.errors }}</div>
+                        {% endif %}
                     </div>
-                    <div class="mb-3 form-check">
-                        {{ form.remember_me }}
-                        <label class="form-check-label" for="{{ form.remember_me.id_for_label }}">
-                            {{ form.remember_me.label }}
-                        </label>
+
+                    <div class="form-group mb-4">
+                        <label class="small mb-2 font-weight-bold text-muted"
+                            for="{{ form.password.id_for_label }}">CONTRASEÑA</label>
+                        <input class="form-control" id="{{ form.password.id_for_label }}" type="password"
+                            name="{{ form.password.name }}" placeholder="Ingresa tu contraseña" required />
+                        {% if form.password.errors %}
+                        <div class="text-danger small mt-1 ps-2">{{ form.password.errors }}</div>
+                        {% endif %}
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+
+                    <div class="d-grid gap-2 mt-4 mb-0">
+                        <button class="btn btn-primary btn-login btn-block" type="submit">INGRESAR</button>
+                    </div>
+
                 </form>
-                <p class="text-center mt-3">
-                    ¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a>
-                </p>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    input[type="text"], input[type="password"] {
-        display: block;
-        width: 100%;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        font-size: 1rem;
-    }
-</style>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
-        const toggleButton = document.getElementById('toggle-password');
-        const toggleText = document.getElementById('toggle-password-text');
-
-        if (passwordInput && toggleButton && toggleText) {
-            toggleButton.addEventListener('click', function() {
-                const isPassword = passwordInput.getAttribute('type') === 'password';
-                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
-                toggleText.textContent = isPassword ? 'Ocultar' : 'Ver';
-            });
-        }
-    });
-</script>
 {% endblock %}

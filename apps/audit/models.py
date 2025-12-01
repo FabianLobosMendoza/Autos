@@ -13,6 +13,9 @@ class AuditLog(models.Model):
         ('set_role', 'Cambiar rol'),
         ('delete_user', 'Eliminar usuario'),
         ('reset_password', 'Resetear contraseña'),
+        ('create_client', 'Crear cliente'),
+        ('update_client', 'Actualizar cliente'),
+        ('delete_client', 'Eliminar cliente'),
     ]
     
     actor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='audit_logs')

@@ -35,15 +35,13 @@ def audit_log_list(request):
     
     logs = logs.select_related('actor', 'target_user')[:500]
     
-    actions = [action[0] for action in AuditLog.ACTION_CHOICES]
-    
     context = {
         'logs': logs,
         'actor_filter': actor_filter,
         'action_filter': action_filter,
         'date_from': date_from,
         'date_to': date_to,
-        'actions': actions,
+        'actions': AuditLog.ACTION_CHOICES,
     }
     return render(request, 'audit/audit_list.html', context)
 

@@ -11,20 +11,10 @@
             <div class="card mb-3">
                 <div class="card-header">Datos de Identidad</div>
                 <div class="card-body row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Apellido</label>
-                        <input type="text" name="last_name" class="form-control" value="{{ client_form.last_name.value|default_if_none:'' }}">
-                        {% for error in client_form.last_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" name="first_name" class="form-control" value="{{ client_form.first_name.value|default_if_none:'' }}">
-                        {% for error in client_form.first_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
-                    </div>
                     <div class="col-md-12">
-                        <label class="form-label">Razón Social (si corresponde)</label>
-                        <input type="text" name="company_name" class="form-control" value="{{ client_form.company_name.value|default_if_none:'' }}">
-                        {% for error in client_form.company_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        <label class="form-label">Nombre y apellido o Razón Social</label>
+                        <input type="text" name="full_name" class="form-control" value="{{ client_form.full_name.value|default_if_none:client_form.full_name.initial }}">
+                        {% for error in client_form.full_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Tipo de Documento</label>
@@ -135,43 +125,46 @@
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>Datos del Cónyuge / Cotitular (opcional)</span>
-                    <small class="text-muted">Completar solo si aplica</small>
+                    <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="toggle-coholder">
+                        <label class="form-check-label small text-muted" for="toggle-coholder">Completar solo si aplica</label>
+                    </div>
                 </div>
-                <div class="card-body row g-3">
+                <div id="coholder-section" class="card-body row g-3 d-none">
                     <div class="col-md-12">
                         <label class="form-label">Apellido y Nombre</label>
-                        <input type="text" name="co-full_name" class="form-control" value="{{ coholder_form.full_name.value|default_if_none:'' }}">
-                        {% if coholder_form %}{% for error in coholder_form.full_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                        <input data-coholder-input type="text" name="co-full_name" class="form-control" value="{{ coholder_form.full_name.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.full_name.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Sexo</label>
                         {{ coholder_form.sex }}
-                        {% if coholder_form %}{% for error in coholder_form.sex.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                        {% if coholder_form %}{% for error in coholder_form.sex.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">DNI</label>
-                        <input type="text" name="co-dni" class="form-control" value="{{ coholder_form.dni.value|default_if_none:'' }}">
-                        {% if coholder_form %}{% for error in coholder_form.dni.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                        <input data-coholder-input type="text" name="co-dni" class="form-control" value="{{ coholder_form.dni.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.dni.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Fecha de Nacimiento</label>
                         {{ coholder_form.birth_date }}
-                        {% if coholder_form %}{% for error in coholder_form.birth_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                        {% if coholder_form %}{% for error in coholder_form.birth_date.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Nacionalidad</label>
                         {{ coholder_form.nationality }}
-                        {% if coholder_form %}{% for error in coholder_form.nationality.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                        {% if coholder_form %}{% for error in coholder_form.nationality.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Teléfono</label>
-                        <input type="text" name="co-phone" class="form-control" value="{{ coholder_form.phone.value|default_if_none:'' }}">
-                        {% if coholder_form %}{% for error in coholder_form.phone.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                        <input data-coholder-input type="text" name="co-phone" class="form-control" value="{{ coholder_form.phone.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.phone.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Correo Electrónico</label>
-                        <input type="email" name="co-email" class="form-control" value="{{ coholder_form.email.value|default_if_none:'' }}">
-                        {% if coholder_form %}{% for error in coholder_form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}{% endif %}
+                        <input data-coholder-input type="email" name="co-email" class="form-control" value="{{ coholder_form.email.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.email.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                 </div>
             </div>
@@ -189,4 +182,31 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('toggle-coholder');
+    const section = document.getElementById('coholder-section');
+    const inputs = section ? section.querySelectorAll('[data-coholder-input], select[name^="co-"], input[name^="co-"]') : [];
+    const hasError = section && section.querySelector('.coholder-error');
+    const hasData = Array.from(inputs).some(el => (el.value || '').trim() !== '');
+
+    function setEnabled(enabled) {
+        if (!section) return;
+        section.classList.toggle('d-none', !enabled);
+        inputs.forEach(el => {
+            el.disabled = !enabled;
+        });
+    }
+
+    if (toggle) {
+        toggle.addEventListener('change', () => setEnabled(toggle.checked));
+        const shouldEnable = hasError || hasData;
+        toggle.checked = shouldEnable;
+        setEnabled(shouldEnable);
+    }
+});
+</script>
 {% endblock %}
