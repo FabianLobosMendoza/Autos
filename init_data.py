@@ -4,12 +4,15 @@ Script de inicializacion para la aplicacion Django.
 Ejecutar despues de las migraciones para poblar datos iniciales.
 """
 import os
-import django
-from django.contrib.auth.models import User
-from apps.users.models import UserProfile
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "concesionario_project.settings")
-django.setup()
+
+import django  # noqa: E402  # importa Django luego de setear DJANGO_SETTINGS_MODULE
+
+django.setup()  # inicializa Django antes de tocar modelos
+
+from django.contrib.auth.models import User  # noqa: E402
+from apps.users.models import UserProfile  # noqa: E402
 
 
 def create_default_user():
