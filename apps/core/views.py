@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 def landing(request):
     """Landing page - homepage despu\u0301s del login."""
     profile = getattr(request.user, 'profile', None)
-    role_value = getattr(profile, 'role', 'usuario') if profile else 'usuario'
+    role_value = getattr(profile, 'role', 'vendedor') if profile else 'vendedor'
     context = {
         'user': request.user,
         'role': role_value,

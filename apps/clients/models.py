@@ -2,12 +2,14 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, EmailValidator
 from django.db import models
-
+from django.contrib.auth.models import User
+from django.utils import timezone
 
 DOC_TYPE_CHOICES = [
     ('LE', 'Libreta de Enrolamiento (LE)'),
     ('LC', 'Libreta Cívica (LC)'),
     ('DNI', 'DNI'),
+    ('PAS', 'Pasaporte'),
 ]
 
 SEX_CHOICES = [
@@ -20,6 +22,7 @@ MARITAL_STATUS_CHOICES = [
     ('casado', 'Casado'),
     ('soltero', 'Soltero'),
     ('divorciado', 'Divorciado'),
+    ('viudo', 'Viudo'),
 ]
 
 NATIONALITY_CHOICES = [
@@ -56,6 +59,7 @@ def validate_cuit(value: str):
 
 class Client(models.Model):
     """Datos del cliente titular."""
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='clients_owned')
     # Identidad
     first_name = models.CharField('Nombre', max_length=100, blank=True)
     last_name = models.CharField('Apellido', max_length=100, blank=True)
@@ -69,7 +73,7 @@ class Client(models.Model):
     birth_date = models.DateField('Fecha de Nacimiento')
     sex = models.CharField('Sexo', max_length=1, choices=SEX_CHOICES)
     marital_status = models.CharField('Estado Civil', max_length=10, choices=MARITAL_STATUS_CHOICES)
-    nationality = models.CharField('Nacionalidad', max_length=20, choices=NATIONALITY_CHOICES)
+    nationality = models.CharField('Nacionalidad', max_length=50)
 
     # Datos fiscales
     tax_condition = models.CharField('Condición Fiscal', max_length=10, choices=TAX_CONDITION_CHOICES)
@@ -87,6 +91,7 @@ class Client(models.Model):
     # Contacto
     phone = models.CharField('Teléfono', max_length=30)
     email = models.EmailField('Correo Electrónico', validators=[EmailValidator()])
+    employment = models.CharField('Empleo / Ocupación', max_length=100, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -110,12 +115,14 @@ class CoHolder(models.Model):
     """Datos de cónyuge o cotitular (opcional)."""
     client = models.OneToOneField(Client, on_delete=models.CASCADE, related_name='coholder')
     full_name = models.CharField('Apellido y Nombre', max_length=150)
+    doc_type = models.CharField('Tipo de Documento', max_length=3, choices=DOC_TYPE_CHOICES, default='DNI')
     sex = models.CharField('Sexo', max_length=1, choices=SEX_CHOICES)
     dni = models.CharField('DNI', max_length=15, validators=[RegexValidator(r'^\d+$', 'Solo números.')])
     birth_date = models.DateField('Fecha de Nacimiento')
-    nationality = models.CharField('Nacionalidad', max_length=20, choices=NATIONALITY_CHOICES)
+    nationality = models.CharField('Nacionalidad', max_length=50)
     phone = models.CharField('Teléfono', max_length=30)
     email = models.EmailField('Correo Electrónico', validators=[EmailValidator()])
+    employment = models.CharField('Empleo / Ocupación', max_length=100, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -126,3 +133,41 @@ class CoHolder(models.Model):
     class Meta:
         verbose_name = 'Cotitular'
         verbose_name_plural = 'Cotitulares'
+
+
+class ClientEvent(models.Model):
+    """Evento agendado con un cliente."""
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='events')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='client_events', null=True, blank=True)
+    title = models.CharField('Título', max_length=150)
+    description = models.TextField('Notas', blank=True)
+    starts_at = models.DateTimeField('Fecha y hora')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Evento de cliente'
+        verbose_name_plural = 'Eventos de cliente'
+        ordering = ['starts_at']
+        indexes = [
+            models.Index(fields=['starts_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.title} - {self.client} ({self.starts_at:%Y-%m-%d %H:%M})"
+
+
+class ClientNote(models.Model):
+    """Notas del cliente (solo se agregan, no se borran)."""
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='notes')
+    author = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
+    content = models.TextField('Nota')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Nota de cliente'
+        verbose_name_plural = 'Notas de cliente'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        author_name = self.author.username if self.author else 'Sistema'
+        return f"Nota de {author_name} en {self.client} - {self.created_at:%Y-%m-%d}"

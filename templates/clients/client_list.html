@@ -8,10 +8,12 @@
     <a href="{% url 'client_create' %}" class="btn btn-primary">Nuevo cliente</a>
 </div>
 
-<form method="get" class="mb-3">
+<form class="mb-3" id="client-search-form">
     <div class="input-group">
-        <input type="text" name="q" class="form-control" placeholder="Buscar por nombre, razón social o CUIT" value="{{ query }}">
-        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+        <input type="text" name="q" class="form-control" id="client-search"
+            placeholder="Buscar por nombre, razón social, CUIT o teléfono"
+            value="{{ query }}">
+        <button class="btn btn-outline-secondary" type="button" id="client-search-btn">Buscar</button>
     </div>
 </form>
 
@@ -23,7 +25,7 @@
                     <th>Cliente</th>
                     <th>Documento</th>
                     <th>CUIT/CUIL</th>
-                    <th>Condición Fiscal</th>
+                    <th>Teléfono</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -35,7 +37,7 @@
                     </td>
                     <td>{{ c.doc_type }} {{ c.doc_number }}</td>
                     <td>{{ c.cuit }}</td>
-                    <td>{{ c.get_tax_condition_display }}</td>
+                    <td>{{ c.phone }}</td>
                     <td>
                         <a href="{% url 'client_detail' c.id %}" class="btn btn-sm btn-outline-primary">Ver</a>
                         <a href="{% url 'client_edit' c.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
@@ -50,4 +52,41 @@
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var input = document.getElementById('client-search');
+    var btn = document.getElementById('client-search-btn');
+    var form = document.getElementById('client-search-form');
+    var rows = Array.from(document.querySelectorAll('table tbody tr'));
+    if (!input || !form) return;
+
+    function filterTable() {
+        var term = (input.value || '').toLowerCase().trim();
+        rows.forEach(function (row) {
+            if (!term) {
+                row.classList.remove('d-none');
+                return;
+            }
+            var text = row.innerText.toLowerCase();
+            row.classList.toggle('d-none', !text.includes(term));
+        });
+    }
+
+    input.addEventListener('input', filterTable);
+    if (btn) {
+        btn.addEventListener('click', filterTable);
+    }
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            filterTable();
+        });
+    }
+    // Aplica filtro inicial si viene valor precargado.
+    filterTable();
+});
+</script>
 {% endblock %}

@@ -10,7 +10,7 @@ from apps.users.models import UserProfile
 
 def is_admin(user):
     profile = getattr(user, 'profile', None)
-    role = getattr(profile, 'role', UserProfile.ROLE_USER) if profile else UserProfile.ROLE_USER
+    role = getattr(profile, 'role', UserProfile.ROLE_VENDOR) if profile else UserProfile.ROLE_VENDOR
     return user.is_superuser or role in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
 
 @login_required(login_url='login')

@@ -72,6 +72,25 @@
         background-color: transparent;
         border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
+
+    .password-toggle-btn {
+        border-top-right-radius: 25px;
+        border-bottom-right-radius: 25px;
+    }
+
+    .password-toggle-btn:focus {
+        box-shadow: none;
+    }
+
+    .is-invalid {
+        border-color: #d32f2f !important;
+        box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.15) !important;
+        background-color: #fff7f7;
+    }
+
+    .invalid-feedback {
+        color: #b71c1c;
+    }
 </style>
 {% endblock %}
 
@@ -98,20 +117,31 @@
                     <div class="form-group mb-4">
                         <label class="small mb-2 font-weight-bold text-muted"
                             for="{{ form.username.id_for_label }}">USUARIO</label>
-                        <input class="form-control" id="{{ form.username.id_for_label }}" type="text"
-                            name="{{ form.username.name }}" placeholder="Ingresa tu usuario" required />
+                        <input class="form-control{% if form.username.errors or form.non_field_errors %} is-invalid{% endif %}"
+                            id="{{ form.username.id_for_label }}" type="text" name="{{ form.username.name }}"
+                            placeholder="Ingresa tu usuario" required />
                         {% if form.username.errors %}
-                        <div class="text-danger small mt-1 ps-2">{{ form.username.errors }}</div>
+                        <div class="invalid-feedback d-block">{{ form.username.errors }}</div>
                         {% endif %}
                     </div>
 
                     <div class="form-group mb-4">
                         <label class="small mb-2 font-weight-bold text-muted"
                             for="{{ form.password.id_for_label }}">CONTRASEÑA</label>
-                        <input class="form-control" id="{{ form.password.id_for_label }}" type="password"
-                            name="{{ form.password.name }}" placeholder="Ingresa tu contraseña" required />
+                        <div class="input-group">
+                            <input class="form-control{% if form.password.errors or form.non_field_errors %} is-invalid{% endif %}"
+                                id="{{ form.password.id_for_label }}" type="password" name="{{ form.password.name }}"
+                                placeholder="Ingresa tu contraseña" required />
+                            <button class="btn btn-outline-secondary password-toggle-btn" type="button"
+                                data-target="{{ form.password.id_for_label }}" aria-label="Ver u ocultar contraseña">
+                                <span class="toggle-text">Ver</span>
+                            </button>
+                        </div>
                         {% if form.password.errors %}
-                        <div class="text-danger small mt-1 ps-2">{{ form.password.errors }}</div>
+                        <div class="invalid-feedback d-block">{{ form.password.errors }}</div>
+                        {% endif %}
+                        {% if form.non_field_errors %}
+                        <div class="invalid-feedback d-block">Usuario o contraseña incorrectos.</div>
                         {% endif %}
                     </div>
 
@@ -124,4 +154,25 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.password-toggle-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var targetId = this.getAttribute('data-target');
+                var input = document.getElementById(targetId);
+                if (!input) { return; }
+                var isPassword = input.getAttribute('type') === 'password';
+                input.setAttribute('type', isPassword ? 'text' : 'password');
+                var textEl = this.querySelector('.toggle-text');
+                if (textEl) {
+                    textEl.textContent = isPassword ? 'Ocultar' : 'Ver';
+                }
+                this.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+            });
+        });
+    });
+</script>
 {% endblock %}

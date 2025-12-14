@@ -27,9 +27,12 @@
                     <div class="mb-3">
                         <label class="form-label" for="role">Rol</label>
                         <select class="form-select" id="role" name="role">
-                            <option value="usuario" {% if profile.role == 'usuario' %}selected{% endif %}>Usuario</option>
-                            <option value="vendedor" {% if profile.role == 'vendedor' %}selected{% endif %}>Vendedor oficial de cuentas</option>
+                            <option value="vendedor" {% if profile.role == 'vendedor' %}selected{% endif %}>Vendedor</option>
+                            <option value="negociador" {% if profile.role == 'negociador' %}selected{% endif %}>Negociador oficial de cuenta</option>
                             <option value="supervisor" {% if profile.role == 'supervisor' %}selected{% endif %}>Supervisor</option>
+                            <option value="gestor" {% if profile.role == 'gestor' %}selected{% endif %}>Gestor</option>
+                            <option value="contable" {% if profile.role == 'contable' %}selected{% endif %}>Contable</option>
+                            <option value="marqueting" {% if profile.role == 'marqueting' %}selected{% endif %}>Marqueting</option>
                             <option value="admin" {% if profile.role == 'admin' %}selected{% endif %}>Administrador</option>
                         </select>
                     </div>

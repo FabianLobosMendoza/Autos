@@ -86,7 +86,7 @@
             <div class="field-row p1-postal">{{ client.postal_code }}</div>
             <div class="field-row p1-cuit">{{ client.cuit }}</div>
             <div class="field-row p1-birth">{{ client.birth_date|date:'d/m/Y' }}</div>
-            <div class="field-row p1-nationality">{{ client.get_nationality_display }}</div>
+            <div class="field-row p1-nationality">{{ client.nationality }}</div>
             <div class="field-row p1-sex">{{ client.get_sex_display }}</div>
             <div class="field-row p1-phone">{{ client.phone }}</div>
             <div class="field-row p1-civil">{{ client.get_marital_status_display }}</div>
@@ -94,8 +94,8 @@
 
             {% if coholder %}
             <div class="field-row p1-coholder-name">{{ coholder.full_name }}</div>
-            <div class="field-row p1-coholder-dni">{{ coholder.dni }}</div>
-            <div class="field-row p1-coholder-nationality">{{ coholder.get_nationality_display }}</div>
+            <div class="field-row p1-coholder-dni">{{ coholder.get_doc_type_display }} {{ coholder.dni }}</div>
+            <div class="field-row p1-coholder-nationality">{{ coholder.nationality }}</div>
             <div class="field-row p1-coholder-sex">{{ coholder.get_sex_display }}</div>
             <div class="field-row p1-coholder-phone">{{ coholder.phone }}</div>
             <div class="field-row p1-coholder-birth">{{ coholder.birth_date|date:'d/m/Y' }}</div>

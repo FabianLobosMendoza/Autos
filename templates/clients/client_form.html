@@ -11,9 +11,16 @@
             <div class="card mb-3">
                 <div class="card-header">Datos de Identidad</div>
                 <div class="card-body row g-3">
+                    {% if client_form.owner %}
+                    <div class="col-md-6">
+                        <label class="form-label">Asignar a</label>
+                        {{ client_form.owner }}
+                        {% for error in client_form.owner.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    {% endif %}
                     <div class="col-md-12">
                         <label class="form-label">Nombre y apellido o Razón Social</label>
-                        <input type="text" name="full_name" class="form-control" value="{{ client_form.full_name.value|default_if_none:client_form.full_name.initial }}">
+                        <input type="text" name="full_name" class="form-control" value="{{ client_form.full_name.value|default_if_none:''|default:'' }}">
                         {% for error in client_form.full_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
                     <div class="col-md-4">
@@ -28,7 +35,9 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Fecha de Nacimiento</label>
-                        {{ client_form.birth_date }}
+                        {% with client_form.birth_date.value|default_if_none:client_form.instance.birth_date|date:'Y-m-d' as birth_val %}
+                        <input type="date" name="birth_date" class="form-control" value="{{ birth_val|default:'' }}">
+                        {% endwith %}
                         {% for error in client_form.birth_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
                     <div class="col-md-4">
@@ -115,6 +124,11 @@
                         {% for error in client_form.phone.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
                     <div class="col-md-6">
+                        <label class="form-label">Empleo / Ocupación</label>
+                        <input type="text" name="employment" class="form-control" value="{{ client_form.employment.value|default_if_none:'' }}">
+                        {% for error in client_form.employment.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-6">
                         <label class="form-label">Correo Electrónico</label>
                         <input type="email" name="email" class="form-control" value="{{ client_form.email.value|default_if_none:'' }}">
                         {% for error in client_form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
@@ -137,6 +151,11 @@
                         {% if coholder_form %}{% for error in coholder_form.full_name.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label">Tipo de Documento</label>
+                        {{ coholder_form.doc_type }}
+                        {% if coholder_form %}{% for error in coholder_form.doc_type.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">Sexo</label>
                         {{ coholder_form.sex }}
                         {% if coholder_form %}{% for error in coholder_form.sex.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
@@ -148,13 +167,20 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Fecha de Nacimiento</label>
-                        {{ coholder_form.birth_date }}
+                        {% with coholder_form.birth_date.value|default_if_none:coholder_form.instance.birth_date|date:'Y-m-d' as co_birth_val %}
+                        <input data-coholder-input type="date" name="co-birth_date" class="form-control" value="{{ co_birth_val|default:'' }}">
+                        {% endwith %}
                         {% if coholder_form %}{% for error in coholder_form.birth_date.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Nacionalidad</label>
                         {{ coholder_form.nationality }}
                         {% if coholder_form %}{% for error in coholder_form.nationality.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Empleo / Ocupación</label>
+                        <input data-coholder-input type="text" name="co-employment" class="form-control" value="{{ coholder_form.employment.value|default_if_none:'' }}">
+                        {% if coholder_form %}{% for error in coholder_form.employment.errors %}<div class="text-danger small coholder-error">{{ error }}</div>{% endfor %}{% endif %}
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Teléfono</label>

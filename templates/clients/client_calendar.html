@@ -1,0 +1,166 @@
+{% extends "base/base.html" %}
+
+{% block title %}Calendario de clientes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Calendario de reuniones</h3>
+    <a href="{% url 'client_list' %}" class="btn btn-outline-secondary">Volver a clientes</a>
+ </div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Agendar evento</h5>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        {{ form.title }}
+                        {% for error in form.title.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        {{ form.client }}
+                        {% for error in form.client.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    {% if form.owner %}
+                    <div class="mb-3">
+                        <label class="form-label">Asignar a</label>
+                        {{ form.owner }}
+                        {% for error in form.owner.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <label class="form-label">Fecha y hora</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                {{ form.start_date }}
+                                {% for error in form.start_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-6">
+                                {{ form.start_time }}
+                                {% for error in form.start_time.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                            </div>
+                        </div>
+                        {% for error in form.starts_at.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notas</label>
+                        {{ form.description }}
+                        {% for error in form.description.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Guardar evento</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Próximos eventos</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Fecha y hora</th>
+                                <th>Título</th>
+                                <th>Cliente</th>
+                                {% if show_owner %}<th>Usuario</th>{% endif %}
+                                <th>Notas</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ev in events %}
+                            <tr>
+                                <td>{{ ev.starts_at|date:"d/m/Y H:i" }}</td>
+                                <td>{{ ev.title }}</td>
+                                <td>{% if ev.client %}<a href="{% url 'client_detail' ev.client.id %}">{{ ev.client }}</a>{% endif %}</td>
+                                {% if show_owner %}
+                                <td>
+                                    {% if ev.owner %}
+                                        {{ ev.owner.username }}
+                                        {% if ev.owner.profile %} ({{ ev.owner.profile.get_role_display }}){% endif %}
+                                    {% else %}
+                                        Sin asignar
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+                                <td>{{ ev.description }}</td>
+                                <td class="d-flex gap-1">
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'client_event_edit' ev.id %}">Editar</a>
+                                    <form method="post" action="{% url 'client_event_delete' ev.id %}" onsubmit="return confirm('¿Eliminar este evento?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="{% if show_owner %}6{% else %}5{% endif %}" class="text-muted text-center py-3">Sin eventos agendados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var dateInput = document.querySelector('input[name="start_date"]');
+    var timeInput = document.querySelector('input[name="start_time"]');
+
+    function formatDate(val) {
+        var digits = (val || '').replace(/\D/g, '').slice(0, 8); // ddMMyyyy
+        var out = '';
+        if (digits.length >= 2) {
+            out += digits.slice(0, 2);
+            if (digits.length >= 4) {
+                out += '/' + digits.slice(2, 4);
+                if (digits.length > 4) {
+                    out += '/' + digits.slice(4, 8);
+                }
+            } else {
+                out += '/' + digits.slice(2);
+            }
+        } else {
+            out = digits;
+        }
+        return out;
+    }
+
+    function formatTime(val) {
+        var digits = (val || '').replace(/\D/g, '').slice(0, 4); // HHMM
+        if (digits.length >= 3) {
+            return digits.slice(0, 2) + ':' + digits.slice(2, 4);
+        }
+        return digits;
+    }
+
+    if (dateInput) {
+        dateInput.addEventListener('input', function () {
+            this.value = formatDate(this.value);
+        });
+        dateInput.addEventListener('blur', function () {
+            this.value = formatDate(this.value);
+        });
+    }
+
+    if (timeInput) {
+        timeInput.addEventListener('input', function () {
+            this.value = formatTime(this.value);
+        });
+        timeInput.addEventListener('blur', function () {
+            this.value = formatTime(this.value);
+        });
+    }
+});
+</script>
+{% endblock %}

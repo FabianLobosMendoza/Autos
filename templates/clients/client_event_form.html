@@ -1,0 +1,108 @@
+{% extends "base/base.html" %}
+
+{% block title %}Editar evento{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Editar evento</h3>
+    <a href="{% url 'client_calendar' %}" class="btn btn-outline-secondary">Volver al calendario</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Título</label>
+                {{ form.title }}
+                {% for error in form.title.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Cliente</label>
+                {{ form.client }}
+                {% for error in form.client.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            {% if form.owner %}
+            <div class="mb-3">
+                <label class="form-label">Asignar a</label>
+                {{ form.owner }}
+                {% for error in form.owner.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            {% endif %}
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Fecha</label>
+                    {{ form.start_date }}
+                    {% for error in form.start_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Hora</label>
+                    {{ form.start_time }}
+                    {% for error in form.start_time.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notas</label>
+                {{ form.description }}
+                {% for error in form.description.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a href="{% url 'client_calendar' %}" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var dateInput = document.querySelector('input[name="start_date"]');
+    var timeInput = document.querySelector('input[name="start_time"]');
+
+    function formatDate(val) {
+        var digits = (val || '').replace(/\D/g, '').slice(0, 8); // ddMMyyyy
+        var out = '';
+        if (digits.length >= 2) {
+            out += digits.slice(0, 2);
+            if (digits.length >= 4) {
+                out += '/' + digits.slice(2, 4);
+                if (digits.length > 4) {
+                    out += '/' + digits.slice(4, 8);
+                }
+            } else {
+                out += '/' + digits.slice(2);
+            }
+        } else {
+            out = digits;
+        }
+        return out;
+    }
+
+    function formatTime(val) {
+        var digits = (val || '').replace(/\D/g, '').slice(0, 4); // HHMM
+        if (digits.length >= 3) {
+            return digits.slice(0, 2) + ':' + digits.slice(2, 4);
+        }
+        return digits;
+    }
+
+    if (dateInput) {
+        dateInput.addEventListener('input', function () {
+            this.value = formatDate(this.value);
+        });
+        dateInput.addEventListener('blur', function () {
+            this.value = formatDate(this.value);
+        });
+    }
+
+    if (timeInput) {
+        timeInput.addEventListener('input', function () {
+            this.value = formatTime(this.value);
+        });
+        timeInput.addEventListener('blur', function () {
+            this.value = formatTime(this.value);
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -11,5 +11,5 @@ def create_profile_on_user_creation(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.get_or_create(
             user=instance,
-            defaults={'role': UserProfile.ROLE_USER},
+            defaults={'role': UserProfile.ROLE_VENDOR},
         )

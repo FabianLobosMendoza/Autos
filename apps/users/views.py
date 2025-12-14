@@ -10,13 +10,13 @@ from apps.users.models import UserProfile
 def is_admin(user):
     """Verifica si el usuario tiene rol administrador o supervisor."""
     profile = getattr(user, 'profile', None)
-    role = getattr(profile, 'role', UserProfile.ROLE_USER) if profile else UserProfile.ROLE_USER
+    role = getattr(profile, 'role', UserProfile.ROLE_VENDOR) if profile else UserProfile.ROLE_VENDOR
     return user.is_superuser or role in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
 
 
 def ensure_user_related(user):
     """Garantiza que el usuario tenga perfil."""
-    UserProfile.objects.get_or_create(user=user, defaults={'role': UserProfile.ROLE_USER})
+    UserProfile.objects.get_or_create(user=user, defaults={'role': UserProfile.ROLE_VENDOR})
 
 
 @login_required(login_url='login')
@@ -57,7 +57,7 @@ def edit_user_profile(request, user_id):
         user.first_name = request.POST.get('first_name', '')
         user.last_name = request.POST.get('last_name', '')
         user.email = request.POST.get('email', '')
-        role_value = request.POST.get('role', UserProfile.ROLE_USER)
+        role_value = request.POST.get('role', UserProfile.ROLE_VENDOR)
         user.is_staff = role_value in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
         user.save()
         
@@ -65,7 +65,8 @@ def edit_user_profile(request, user_id):
         profile.address = request.POST.get('address', '')
         profile.notes = request.POST.get('notes', '')
         birthdate_value = request.POST.get('birthdate')
-        profile.birthdate = birthdate_value or None
+        if birthdate_value:
+            profile.birthdate = birthdate_value
         profile.role = role_value
         profile.save()
         
@@ -109,7 +110,7 @@ def toggle_admin(request, user_id):
     ensure_user_related(user)
     user.is_staff = not user.is_staff
     user.save()
-    user.profile.role = UserProfile.ROLE_ADMIN if user.is_staff else UserProfile.ROLE_USER
+    user.profile.role = UserProfile.ROLE_ADMIN if user.is_staff else UserProfile.ROLE_VENDOR
     user.profile.save()
     status = "administrador" if user.is_staff else "usuario"
     messages.success(request, f'{user.username} ahora es {status}.')
@@ -127,7 +128,7 @@ def update_user_role(request, user_id):
         messages.error(request, 'Método no permitido.')
         return redirect('user_detail', user_id=user.id)
 
-    new_role = request.POST.get('role', UserProfile.ROLE_USER)
+    new_role = request.POST.get('role', UserProfile.ROLE_VENDOR)
     valid_roles = [choice[0] for choice in UserProfile.ROLE_CHOICES]
     if new_role not in valid_roles:
         messages.error(request, 'Rol inválido.')
@@ -146,20 +147,22 @@ def update_user_role(request, user_id):
 @login_required(login_url='login')
 @user_passes_test(is_admin, login_url='landing')
 def delete_user(request, user_id):
-    """Eliminar usuario."""
+    """Habilitar/Deshabilitar usuario (sin eliminar)."""
     user = get_object_or_404(User, id=user_id)
     ensure_user_related(user)
     if user == request.user:
-        messages.error(request, 'No puedes eliminar tu propio usuario.')
-        return redirect('user_list')
-    
+        messages.error(request, 'No puedes deshabilitar tu propio usuario.')
+        return redirect('user_detail', user_id=user.id)
+
     if request.method == 'POST':
-        user.delete()
-        messages.success(request, f'Usuario {user.username} eliminado.')
-        return redirect('user_list')
-    
-    context = {'user': user}
-    return render(request, 'users/delete_confirm.html', context)
+        user.is_active = not user.is_active
+        user.save(update_fields=['is_active'])
+        estado = 'habilitado' if user.is_active else 'deshabilitado'
+        messages.success(request, f'Usuario {user.username} {estado}.')
+    else:
+        messages.info(request, 'Usa el selector para habilitar/deshabilitar.')
+
+    return redirect('user_detail', user_id=user.id)
 
 
 @login_required(login_url='login')
@@ -188,7 +191,8 @@ def profile_edit(request):
         profile.address = request.POST.get('address', '')
         profile.notes = request.POST.get('notes', '')
         birthdate_value = request.POST.get('birthdate')
-        profile.birthdate = birthdate_value or None
+        if birthdate_value:
+            profile.birthdate = birthdate_value
         profile.save()
         
         messages.success(request, 'Perfil actualizado.')
@@ -209,7 +213,7 @@ def create_user(request):
         last_name = request.POST.get('last_name', '').strip()
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
-        role_value = request.POST.get('role', UserProfile.ROLE_USER)
+        role_value = request.POST.get('role', UserProfile.ROLE_VENDOR)
         phone = request.POST.get('phone', '').strip()
         address = request.POST.get('address', '').strip()
         notes = request.POST.get('notes', '').strip()

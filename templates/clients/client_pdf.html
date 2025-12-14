@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cliente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f7f7f7; font-size: 14px; }
+        .sheet { background: #fff; padding: 16px; margin: 16px auto; max-width: 980px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .section-title { border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; margin-bottom: 10px; }
+        .row.g-2 > [class*='col-'] { margin-bottom: 6px; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: #fff; font-size: 13px; }
+            .sheet { box-shadow: none; margin: 0; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sheet">
+        <div class="d-flex justify-content-end mb-2">
+            <button class="btn btn-primary no-print btn-sm" onclick="window.print()">Imprimir / Guardar PDF</button>
+        </div>
+
+        <div class="mb-3">
+            <h6 class="section-title">Identidad</h6>
+            <div class="row g-2">
+                <div class="col-md-6"><strong>Nombre / Razón Social:</strong> {% if client.company_name %}{{ client.company_name }}{% else %}{{ client.last_name }}, {{ client.first_name }}{% endif %}</div>
+                <div class="col-md-3"><strong>Documento:</strong> {{ client.get_doc_type_display }} {{ client.doc_number }}</div>
+                <div class="col-md-3"><strong>Fecha Nac.:</strong> {{ client.birth_date }}</div>
+                <div class="col-md-3"><strong>Sexo:</strong> {{ client.get_sex_display }}</div>
+                <div class="col-md-3"><strong>Estado Civil:</strong> {{ client.get_marital_status_display }}</div>
+                <div class="col-md-3"><strong>Nacionalidad:</strong> {{ client.nationality }}</div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <h6 class="section-title">Datos Fiscales</h6>
+            <div class="row g-2">
+                <div class="col-md-4"><strong>Condición Fiscal:</strong> {{ client.get_tax_condition_display }}</div>
+                <div class="col-md-4"><strong>CUIT/CUIL:</strong> {{ client.cuit }}</div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <h6 class="section-title">Domicilio</h6>
+            <div class="row g-2">
+                <div class="col-md-6"><strong>Calle:</strong> {{ client.street }} {{ client.street_number }}</div>
+                <div class="col-md-3"><strong>Piso/Depto:</strong> {{ client.floor }} {{ client.apartment }}</div>
+                <div class="col-md-3"><strong>Código Postal:</strong> {{ client.postal_code }}</div>
+                <div class="col-md-4"><strong>Localidad:</strong> {{ client.city }}</div>
+                <div class="col-md-4"><strong>Provincia:</strong> {{ client.province }}</div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <h6 class="section-title">Contacto</h6>
+            <div class="row g-2">
+                <div class="col-md-4"><strong>Teléfono:</strong> {{ client.phone }}</div>
+                <div class="col-md-4"><strong>Empleo / Ocupación:</strong> {{ client.employment }}</div>
+                <div class="col-md-4"><strong>Email:</strong> {{ client.email }}</div>
+            </div>
+        </div>
+
+        {% if coholder %}
+        <div class="mb-3">
+            <h6 class="section-title">Cónyuge / Cotitular</h6>
+            <div class="row g-2">
+                <div class="col-md-6"><strong>Nombre:</strong> {{ coholder.full_name }}</div>
+                <div class="col-md-3"><strong>Documento:</strong> {{ coholder.get_doc_type_display }} {{ coholder.dni }}</div>
+                <div class="col-md-3"><strong>Fecha Nac.:</strong> {{ coholder.birth_date }}</div>
+                <div class="col-md-3"><strong>Sexo:</strong> {{ coholder.get_sex_display }}</div>
+                <div class="col-md-3"><strong>Nacionalidad:</strong> {{ coholder.nationality }}</div>
+                <div class="col-md-3"><strong>Empleo / Ocupación:</strong> {{ coholder.employment }}</div>
+                <div class="col-md-3"><strong>Teléfono:</strong> {{ coholder.phone }}</div>
+                <div class="col-md-3"><strong>Email:</strong> {{ coholder.email }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if notes %}
+        <div class="mb-3">
+            <h6 class="section-title">Notas</h6>
+            <ul class="list-group">
+                {% for note in notes %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ note.author.username|default:"Sistema" }}</strong>
+                        <small class="text-muted">{{ note.created_at }}</small>
+                    </div>
+                    <div>{{ note.content|linebreaksbr }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

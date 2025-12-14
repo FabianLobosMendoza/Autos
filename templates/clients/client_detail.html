@@ -8,6 +8,7 @@
     <div>
         <a href="{% url 'client_edit' client.id %}" class="btn btn-outline-secondary me-2">Editar</a>
         <a href="{% url 'client_contract' client.id %}" class="btn btn-outline-success me-2" target="_blank">Imprimir</a>
+        <a href="{% url 'client_pdf' client.id %}" class="btn btn-outline-primary me-2" target="_blank">Descargar PDF</a>
         <a href="{% url 'client_list' %}" class="btn btn-outline-primary">Volver</a>
     </div>
 </div>
@@ -15,12 +16,15 @@
 <div class="card mb-3">
     <div class="card-header">Identidad</div>
     <div class="card-body row">
+        {% if client.owner %}
+        <div class="col-md-6"><strong>Asignado a:</strong> {{ client.owner.username }}</div>
+        {% endif %}
         <div class="col-md-6"><strong>Nombre / Razón Social:</strong> {% if client.company_name %}{{ client.company_name }}{% else %}{{ client.last_name }}, {{ client.first_name }}{% endif %}</div>
         <div class="col-md-3"><strong>Documento:</strong> {{ client.doc_type }} {{ client.doc_number }}</div>
         <div class="col-md-3"><strong>Fecha Nacimiento:</strong> {{ client.birth_date }}</div>
         <div class="col-md-3"><strong>Sexo:</strong> {{ client.get_sex_display }}</div>
         <div class="col-md-3"><strong>Estado Civil:</strong> {{ client.get_marital_status_display }}</div>
-        <div class="col-md-3"><strong>Nacionalidad:</strong> {{ client.get_nationality_display }}</div>
+        <div class="col-md-3"><strong>Nacionalidad:</strong> {{ client.nationality }}</div>
     </div>
 </div>
 
@@ -47,6 +51,7 @@
     <div class="card-header">Contacto</div>
     <div class="card-body row">
         <div class="col-md-4"><strong>Teléfono:</strong> {{ client.phone }}</div>
+        <div class="col-md-4"><strong>Empleo / Ocupación:</strong> {{ client.employment }}</div>
         <div class="col-md-4"><strong>Email:</strong> {{ client.email }}</div>
     </div>
 </div>
@@ -58,14 +63,46 @@
         <div class="row">
             <div class="col-md-6"><strong>Nombre:</strong> {{ coholder.full_name }}</div>
             <div class="col-md-3"><strong>Sexo:</strong> {{ coholder.get_sex_display }}</div>
-            <div class="col-md-3"><strong>DNI:</strong> {{ coholder.dni }}</div>
+            <div class="col-md-3"><strong>Documento:</strong> {{ coholder.get_doc_type_display }} {{ coholder.dni }}</div>
             <div class="col-md-3"><strong>Fecha Nacimiento:</strong> {{ coholder.birth_date }}</div>
-            <div class="col-md-3"><strong>Nacionalidad:</strong> {{ coholder.get_nationality_display }}</div>
+            <div class="col-md-3"><strong>Nacionalidad:</strong> {{ coholder.nationality }}</div>
+            <div class="col-md-3"><strong>Empleo / Ocupación:</strong> {{ coholder.employment }}</div>
             <div class="col-md-3"><strong>Teléfono:</strong> {{ coholder.phone }}</div>
             <div class="col-md-3"><strong>Email:</strong> {{ coholder.email }}</div>
         </div>
         {% else %}
         <p class="text-muted mb-0">Sin cotitular cargado.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Notas del cliente</span>
+        <small class="text-muted">Las notas se agregan y se mantienen históricamente.</small>
+    </div>
+    <div class="card-body">
+        <form method="post" class="mb-3">
+            {% csrf_token %}
+            <label class="form-label" for="note">Nueva nota</label>
+            <textarea class="form-control mb-2" id="note" name="note" rows="2" placeholder="Agregar comentario..."></textarea>
+            <button type="submit" class="btn btn-primary btn-sm">Agregar nota</button>
+        </form>
+
+        {% if notes %}
+        <ul class="list-group list-group-flush">
+            {% for note in notes %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ note.author.username|default:'Sistema' }}</strong>
+                    <small class="text-muted">{{ note.created_at }}</small>
+                </div>
+                <div class="mt-1">{{ note.content|linebreaksbr }}</div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted mb-0">Sin notas registradas.</p>
         {% endif %}
     </div>
 </div>
