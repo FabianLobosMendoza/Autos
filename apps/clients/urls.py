@@ -12,4 +12,7 @@ urlpatterns = [
     path('calendario/', views.client_calendar, name='client_calendar'),
     path('calendario/<int:event_id>/editar/', views.client_event_edit, name='client_event_edit'),
     path('calendario/<int:event_id>/eliminar/', views.client_event_delete, name='client_event_delete'),
+    path('leads/<int:lead_id>/nota/', views.client_lead_note_add, name='client_lead_note_add'),
+    path('leads/<int:lead_id>/entrevista/', views.lead_interview_create, name='lead_interview_create'),
+    path('leads/<int:lead_id>/eliminar/', views.client_lead_delete, name='client_lead_delete'),
 ]

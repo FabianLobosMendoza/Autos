@@ -11,6 +11,7 @@ class UserProfile(models.Model):
     ROLE_MANAGER = 'gestor'
     ROLE_ACCOUNTANT = 'contable'
     ROLE_MARKETING = 'marqueting'
+    ROLE_MAINTENANCE = 'mantenimiento'
     ROLE_CHOICES = [
         (ROLE_ADMIN, 'Administrador'),
         (ROLE_VENDOR, 'Vendedor'),
@@ -19,6 +20,7 @@ class UserProfile(models.Model):
         (ROLE_MANAGER, 'Gestor'),
         (ROLE_ACCOUNTANT, 'Contable'),
         (ROLE_MARKETING, 'Marqueting'),
+        (ROLE_MAINTENANCE, 'Mantenimiento'),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')

@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
 from apps.users.models import UserProfile
-from .models import Client, CoHolder, ClientEvent, validate_cuit
+from .models import Client, CoHolder, ClientEvent, ClientLead, ClientLeadNote, LeadInterview, validate_cuit
 
 
 class ClientForm(forms.ModelForm):
@@ -144,6 +144,8 @@ class ClientEventForm(forms.ModelForm):
             is_admin = self.request_user.is_superuser or role in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
             if not is_admin:
                 self.fields['client'].queryset = Client.objects.filter(owner=self.request_user)
+            self.fields['client'].required = False
+            self.fields['client'].empty_label = '(Sin cliente)'
             if is_admin:
                 qs_users = User.objects.filter(profile__role__in=[
                     UserProfile.ROLE_VENDOR,
@@ -197,6 +199,116 @@ class ClientEventForm(forms.ModelForm):
 
     def save(self, commit=True):
         self.instance.starts_at = self.cleaned_data.get('starts_at')
+        if 'owner' in self.cleaned_data and self.cleaned_data.get('owner'):
+            self.instance.owner = self.cleaned_data.get('owner')
+        elif self.request_user:
+            self.instance.owner = self.request_user
+        return super().save(commit=commit)
+
+
+class ClientLeadForm(forms.ModelForm):
+    """Formulario para leads rápidos (nombre/teléfono opcionales)."""
+
+    def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if self.request_user:
+            profile = getattr(self.request_user, 'profile', None)
+            role = getattr(profile, 'role', UserProfile.ROLE_VENDOR) if profile else UserProfile.ROLE_VENDOR
+            is_admin = self.request_user.is_superuser or role in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
+            if is_admin:
+                qs_users = User.objects.filter(profile__role__in=[
+                    UserProfile.ROLE_VENDOR,
+                    UserProfile.ROLE_NEGOTIATOR,
+                    UserProfile.ROLE_MANAGER,
+                    UserProfile.ROLE_ACCOUNTANT,
+                    UserProfile.ROLE_MARKETING,
+                    UserProfile.ROLE_SUPERVISOR,
+                    UserProfile.ROLE_ADMIN,
+                ]).distinct()
+                self.fields['owner'] = forms.ModelChoiceField(
+                    queryset=qs_users,
+                    required=False,
+                    label='Asignar a',
+                    widget=forms.Select(attrs={'class': 'form-select'})
+                )
+            else:
+                if 'owner' in self.fields:
+                    self.fields.pop('owner')
+
+    class Meta:
+        model = ClientLead
+        fields = ['name', 'phone', 'source', 'owner']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre (opcional)'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono (opcional)'}),
+            'source': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Facebook, Google Ads'}),
+        }
+
+    def save(self, commit=True):
+        if 'owner' in self.cleaned_data and self.cleaned_data.get('owner'):
+            self.instance.owner = self.cleaned_data.get('owner')
+        elif self.request_user:
+            self.instance.owner = self.request_user
+        return super().save(commit=commit)
+
+
+class ClientLeadNoteForm(forms.ModelForm):
+    """Notas de lead (append-only)."""
+
+    class Meta:
+        model = ClientLeadNote
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Agregar nota...'}),
+        }
+
+
+class LeadInterviewForm(forms.ModelForm):
+    """Formulario de entrevista para lead."""
+
+    def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if self.request_user:
+            profile = getattr(self.request_user, 'profile', None)
+            role = getattr(profile, 'role', UserProfile.ROLE_VENDOR) if profile else UserProfile.ROLE_VENDOR
+            is_admin = self.request_user.is_superuser or role in (UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPERVISOR)
+            if is_admin:
+                qs_users = User.objects.filter(profile__role__in=[
+                    UserProfile.ROLE_VENDOR,
+                    UserProfile.ROLE_NEGOTIATOR,
+                    UserProfile.ROLE_MANAGER,
+                    UserProfile.ROLE_ACCOUNTANT,
+                    UserProfile.ROLE_MARKETING,
+                    UserProfile.ROLE_SUPERVISOR,
+                    UserProfile.ROLE_ADMIN,
+                ]).distinct()
+                self.fields['owner'] = forms.ModelChoiceField(
+                    queryset=qs_users,
+                    required=False,
+                    label='Asignar a',
+                    widget=forms.Select(attrs={'class': 'form-select'})
+                )
+            else:
+                if 'owner' in self.fields:
+                    self.fields.pop('owner')
+
+    class Meta:
+        model = LeadInterview
+        fields = ['lead', 'title', 'scheduled_at', 'notes', 'owner']
+        widgets = {
+            'lead': forms.HiddenInput(),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Entrevista inicial'}),
+            'scheduled_at': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={
+                'type': 'datetime-local',
+                'class': 'form-control',
+                'step': '60',
+            }),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Notas'}),
+        }
+
+    def save(self, commit=True):
         if 'owner' in self.cleaned_data and self.cleaned_data.get('owner'):
             self.instance.owner = self.cleaned_data.get('owner')
         elif self.request_user:

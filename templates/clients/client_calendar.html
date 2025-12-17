@@ -77,7 +77,15 @@
                             <tr>
                                 <td>{{ ev.starts_at|date:"d/m/Y H:i" }}</td>
                                 <td>{{ ev.title }}</td>
-                                <td>{% if ev.client %}<a href="{% url 'client_detail' ev.client.id %}">{{ ev.client }}</a>{% endif %}</td>
+                                <td>
+                                    {% if ev.client %}
+                                        <a href="{% url 'client_detail' ev.client.id %}">{{ ev.client }}</a>
+                                    {% elif ev.lead %}
+                                        <span class="text-muted">Cliente rápido</span>
+                                    {% else %}
+                                        <span class="text-muted">Sin cliente</span>
+                                    {% endif %}
+                                </td>
                                 {% if show_owner %}
                                 <td>
                                     {% if ev.owner %}
@@ -90,6 +98,14 @@
                                 {% endif %}
                                 <td>{{ ev.description }}</td>
                                 <td class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-outline-info"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#clientInfoModal"
+                                        data-client-name="{% if ev.client %}{% if ev.client.company_name %}{{ ev.client.company_name }}{% else %}{{ ev.client.first_name }} {{ ev.client.last_name }}{% endif %}{% elif ev.lead_name %}{{ ev.lead_name }}{% else %}Sin cliente{% endif %}"
+                                        data-client-phone="{% if ev.client %}{{ ev.client.phone|default:'-' }}{% elif ev.lead_phone %}{{ ev.lead_phone|default:'-' }}{% else %}-{% endif %}">
+                                        Ver info
+                                    </button>
                                     <a class="btn btn-sm btn-outline-secondary" href="{% url 'client_event_edit' ev.id %}">Editar</a>
                                     <form method="post" action="{% url 'client_event_delete' ev.id %}" onsubmit="return confirm('¿Eliminar este evento?');">
                                         {% csrf_token %}
@@ -161,6 +177,39 @@ document.addEventListener('DOMContentLoaded', function () {
             this.value = formatTime(this.value);
         });
     }
+});
+</script>
+
+<!-- Modal info cliente -->
+<div class="modal fade" id="clientInfoModal" tabindex="-1" aria-labelledby="clientInfoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="clientInfoModalLabel">Información del cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-1"><strong>Nombre:</strong> <span id="ci-name"></span></p>
+        <p class="mb-0"><strong>Teléfono:</strong> <span id="ci-phone"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('clientInfoModal');
+    if (!modal) return;
+    modal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var name = button.getAttribute('data-client-name') || '-';
+        var phone = button.getAttribute('data-client-phone') || '-';
+        modal.querySelector('#ci-name').textContent = name.trim() || '-';
+        modal.querySelector('#ci-phone').textContent = phone.trim() || '-';
+    });
 });
 </script>
 {% endblock %}

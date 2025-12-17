@@ -1,0 +1,75 @@
+{% extends "base/base.html" %}
+
+{% block title %}Leads rápidos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Leads rápidos</h3>
+    <a href="{% url 'client_list' %}" class="btn btn-outline-secondary">Volver a clientes</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Crear lead</h5>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="lead_submit" value="1">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre (opcional)</label>
+                        {{ lead_form.name }}
+                        {% for error in lead_form.name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono (opcional)</label>
+                        {{ lead_form.phone }}
+                        {% for error in lead_form.phone.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    {% if lead_form.owner %}
+                    <div class="mb-3">
+                        <label class="form-label">Asignar a</label>
+                        {{ lead_form.owner }}
+                        {% for error in lead_form.owner.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary w-100">Guardar lead</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Últimos leads</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Asignado a</th>
+                                <th>Creado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in leads %}
+                            <tr>
+                                <td>{{ lead.name|default:"-" }}</td>
+                                <td>{{ lead.phone|default:"-" }}</td>
+                                <td>{{ lead.owner.username|default:"-" }}</td>
+                                <td>{{ lead.created_at|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">Sin leads cargados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

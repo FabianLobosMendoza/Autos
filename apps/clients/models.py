@@ -136,12 +136,15 @@ class CoHolder(models.Model):
 
 
 class ClientEvent(models.Model):
-    """Evento agendado con un cliente."""
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='events')
+    """Evento agendado con un cliente (opcional si es solo lead)."""
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='events', null=True, blank=True)
+    lead = models.ForeignKey('ClientLead', on_delete=models.SET_NULL, null=True, blank=True, related_name='events')
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='client_events', null=True, blank=True)
     title = models.CharField('Título', max_length=150)
     description = models.TextField('Notas', blank=True)
     starts_at = models.DateTimeField('Fecha y hora')
+    lead_name = models.CharField('Nombre lead', max_length=150, blank=True)
+    lead_phone = models.CharField('Teléfono lead', max_length=30, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -154,6 +157,57 @@ class ClientEvent(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.client} ({self.starts_at:%Y-%m-%d %H:%M})"
+
+
+class ClientLead(models.Model):
+    """Cliente rápido de publicidad (datos opcionales)."""
+    name = models.CharField('Nombre', max_length=150, blank=True)
+    phone = models.CharField('Teléfono', max_length=30, blank=True)
+    source = models.CharField('Fuente (publicidad)', max_length=100, blank=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='client_leads')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Cliente rápido'
+        verbose_name_plural = 'Clientes rápidos'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name or f"Lead {self.id}"
+
+
+class ClientLeadNote(models.Model):
+    """Notas históricas de un cliente rápido (append-only)."""
+    lead = models.ForeignKey(ClientLead, on_delete=models.CASCADE, related_name='notes')
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Nota de cliente rápido'
+        verbose_name_plural = 'Notas de cliente rápido'
+
+    def __str__(self):
+        return f"Nota de {self.author or 'Sistema'} en lead {self.lead_id}"
+
+
+class LeadInterview(models.Model):
+    """Entrevista agendada para un lead (sin requerir cliente)."""
+    lead = models.ForeignKey(ClientLead, on_delete=models.CASCADE, related_name='interviews')
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='lead_interviews')
+    title = models.CharField('Título', max_length=150)
+    scheduled_at = models.DateTimeField('Fecha y hora')
+    notes = models.TextField('Notas', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['scheduled_at']
+        verbose_name = 'Entrevista de lead'
+        verbose_name_plural = 'Entrevistas de lead'
+
+    def __str__(self):
+        return f"{self.title} ({self.scheduled_at:%Y-%m-%d %H:%M})"
 
 
 class ClientNote(models.Model):

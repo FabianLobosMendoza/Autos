@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db import transaction
 from django.db.models import Q
-from .forms import ClientForm, CoHolderForm, ClientEventForm
-from .models import Client, ClientNote, ClientEvent
+from .forms import ClientForm, CoHolderForm, ClientEventForm, ClientLeadForm, ClientLeadNoteForm, LeadInterviewForm
+from .models import Client, ClientNote, ClientEvent, ClientLead, ClientLeadNote, LeadInterview
 from apps.users.models import UserProfile
 from apps.audit.models import AuditLog
 
@@ -47,7 +47,28 @@ def client_list(request):
             | Q(phone__icontains=query)
             | Q(coholder__phone__icontains=query)
         )
-    return render(request, 'clients/client_list.html', {'clients': clients, 'query': query})
+    # Leads
+    lead_form = ClientLeadForm(request.POST or None, user=request.user)
+    leads_qs = ClientLead.objects.select_related('owner').all()
+    if not full_admin:
+        leads_qs = leads_qs.filter(owner=request.user)
+    if request.method == 'POST' and 'lead_submit' in request.POST:
+        if lead_form.is_valid():
+            lead_form.save()
+            messages.success(request, 'Lead rápido creado.')
+            return redirect('client_list')
+        else:
+            messages.error(request, 'Revisa los datos del lead.')
+
+    leads = leads_qs.order_by('-created_at')[:50]
+
+    return render(request, 'clients/client_list.html', {
+        'clients': clients,
+        'query': query,
+        'lead_form': lead_form,
+        'leads': leads,
+        'full_admin': full_admin,
+    })
 
 
 @login_required(login_url='login')
@@ -249,7 +270,7 @@ def client_calendar(request):
     role = getattr(profile, 'role', UserProfile.ROLE_VENDOR) if profile else UserProfile.ROLE_VENDOR
     is_admin_user = request.user.is_superuser or role == UserProfile.ROLE_ADMIN
 
-    qs = ClientEvent.objects.select_related('client', 'owner', 'owner__profile').order_by('starts_at')
+    qs = ClientEvent.objects.select_related('client', 'owner', 'owner__profile', 'lead').order_by('starts_at')
     show_owner = is_admin_user or role == UserProfile.ROLE_SUPERVISOR
     events = qs if is_admin_user else qs.filter(owner=request.user)
     form = ClientEventForm(request.POST or None, user=request.user)
@@ -316,3 +337,81 @@ def client_event_delete(request, event_id):
         event.delete()
         messages.success(request, 'Evento eliminado.')
     return redirect('client_calendar')
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin, login_url='landing')
+def client_lead_note_add(request, lead_id):
+    """Agregar nota a un cliente rápido (append-only)."""
+    lead = get_object_or_404(ClientLead.objects.select_related('owner'), id=lead_id)
+    full_admin = is_full_admin(request.user)
+    if not full_admin and lead.owner != request.user:
+        messages.error(request, 'No tienes permiso para agregar notas a este cliente rápido.')
+        return redirect('client_list')
+
+    form = ClientLeadNoteForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            note = form.save(commit=False)
+            note.lead = lead
+            note.author = request.user
+            note.save()
+            messages.success(request, 'Nota agregada.')
+        else:
+            messages.error(request, 'Revisa la nota.')
+    return redirect('client_list')
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin, login_url='landing')
+def lead_interview_create(request, lead_id):
+    """Crear entrevista para un cliente rápido sin requerir cliente."""
+    lead = get_object_or_404(ClientLead.objects.select_related('owner'), id=lead_id)
+    full_admin = is_full_admin(request.user)
+    if not full_admin and lead.owner != request.user:
+        messages.error(request, 'No tienes permiso para este cliente rápido.')
+        return redirect('client_list')
+
+    form = LeadInterviewForm(request.POST or None, initial={'lead': lead}, user=request.user)
+    if request.method == 'POST':
+        if form.is_valid():
+            interview = form.save(commit=False)
+            interview.lead = lead
+            if not full_admin:
+                interview.owner = request.user
+            interview.save()
+            # Crear evento en calendario (sin cliente)
+            ClientEvent.objects.create(
+                client=None,
+                lead=lead,
+                owner=interview.owner or request.user,
+                title=interview.title,
+                starts_at=interview.scheduled_at,
+                description=(interview.notes or '').strip(),
+                lead_name=lead.name or '',
+                lead_phone=lead.phone or '',
+            )
+            messages.success(request, 'Entrevista creada.')
+            return redirect('client_list')
+        else:
+            messages.error(request, 'Revisa los datos de la entrevista.')
+
+    return render(request, 'clients/lead_interview_form.html', {
+        'form': form,
+        'lead': lead,
+    })
+
+
+@login_required(login_url='login')
+@user_passes_test(is_admin, login_url='landing')
+def client_lead_delete(request, lead_id):
+    """Eliminar cliente rápido."""
+    lead = get_object_or_404(ClientLead.objects.select_related('owner'), id=lead_id)
+    full_admin = is_full_admin(request.user)
+    if not full_admin and lead.owner != request.user:
+        messages.error(request, 'No tienes permiso para eliminar este cliente rápido.')
+        return redirect('client_list')
+    if request.method == 'POST':
+        lead.delete()
+        messages.success(request, 'Cliente rápido eliminado.')
+    return redirect('client_list')
